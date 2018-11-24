@@ -11,6 +11,7 @@ Fully featured kill/death scoring plugin plus custom death event
  - [x] Level up when acheved spesified amount of XP `(see config)`
  - [x] Commands to see your or another players' stats `(suports formAPI)`
  - [x] Enable floating texts to see leaderboard of stats `(see commands)`
+ - [x] Custom eventing for kills/deaths `(see Custom Event)`
  - [ ] Add commands to easialy change settings in config
  - [ ] Add Level up timer `(level up over time, so stay online to level up!)`
  
