@@ -14,6 +14,9 @@ Fully featured kill/death scoring plugin plus custom death event
  - [x] Custom eventing for kills/deaths `(see Custom Event)`
  - [ ] Add commands to easialy change settings in config
  - [ ] Add Level up timer `(level up over time, so stay online to level up!)`
+ - [ ] Add Top XP Leaderboards
+ - [ ] Add Longest Bow Kills & Hits Leaderboards
+ - [ ] Add Display Levels beside name in chat and nametag
  
 ### Custom Event
 The custom event is simple, it disables the title screen to prevent accedendal quit to menu ;)
