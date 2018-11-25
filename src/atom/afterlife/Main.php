@@ -118,11 +118,15 @@ class Main extends PluginBase implements Listener {
 								$this->texts->set($possition, $args[0]);
 								$this->texts->save();
 								$possition = $player->asVector3();
-								$this->addText($possition, $args[0], null);
-								$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
-
+								if ($player->getLevel() === $this->getServer()->getLevelByName($this->config->get("texts-world"))) {
+									$this->addText($possition, $args[0], null);
+									$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
+								} else {
+									$player->sendMessage(color::RED."You are not in the world spesified in the config to spawn floating texts...");
+									$player->sendMessage(color::RED."Pleae edit config");
+								}
 							} elseif ((in_array($args[0], ["del", "remove", "delete"]))) {
-
+								// comming soon
 							}
 						} else {
 							$player->sendMessage(color::RED . "Please choose \n ---kills, \n ---levels, \n ---kdr, \n ---streaks, \nor delete");
@@ -131,6 +135,8 @@ class Main extends PluginBase implements Listener {
 				} else {
 					$player->sendMessage(color::RED."You donot have permission to run this command!");
 				}
+			} else {
+				$player->sendMessage(color::RED."leaderboards are not enabled... edit config");
 			}
 		} else {
 			$player->sendMessage("Run commands in-game");
@@ -138,7 +144,7 @@ class Main extends PluginBase implements Listener {
 
 		return true;
 	}
-
+	
 	public function getStats (Player $player) {
 		switch ($this->config->get("profile-method")) {
 			case "form":
