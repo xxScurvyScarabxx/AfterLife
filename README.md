@@ -24,7 +24,7 @@ death-method: "custom"
 ```
 
 ### Commands
-| Command | Usage | Description | - |
+| Command | Usage | Description | t |
 | ------- | ----- | ----------- |
 | `/stats` | `/stats <player>` | Shows yours or another players stats. |
 | `/setlearderboard` | `/setleaderboard <type>` | Creates a floating text at players location. |
