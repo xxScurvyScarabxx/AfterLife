@@ -28,11 +28,12 @@ death-method: "custom"
 | ------- | ----- | ----------- |
 | `/stats` | `/stats <player>` | Shows yours or another players stats. |
 | `/setlearderboard` | `/setleaderboard <type>` | Creates a floating text at players location. |
+
 | Floating Text Types | 
-| | `levels` | |
-| | `kills` | |
-| | `kdr` | |
-| | `streaks` | |
+| `levels` |
+| `kills` |
+| `kdr` |
+| `streaks` |
 
 ### Full Config
 ```yml
