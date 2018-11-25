@@ -24,13 +24,13 @@ death-method: "custom"
 ```
 
 ### Commands
-```yml
-stats: 
-    description: "Shows PvP Stats '/stats or /stats <player>'"
-    
-setleaderboard: 
-    description: setsleader board that displays player stats (floating texts)
-```
+| Command | Usage | Description | 
+| ------- | ----- | ----------- |
+| `/stats` | `/stats <player>` | Shows yours or another players stats. |
+| `/setlearderboard` | `/setleaderboard <type>` | Creates a floating text at players location. |
+| ------- | TYPES | ----------- |
+| `levels` | `kills` | `kdr` | `streaks`|
+| ------- | ----- | ----------- |
 
 ### Full Config
 ```yml
