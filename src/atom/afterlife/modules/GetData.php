@@ -24,10 +24,10 @@ class GetData {
                 $string = "kills";
                 break;
             case "kdr":
-                $string = "kdr";
+                $string = "kill/death-ratio";
                 break;
             case "streaks":
-                $string = "killstreak";
+                $string = "kill-streak";
         }
         foreach($files as $file) {
             if(pathinfo($file, PATHINFO_EXTENSION) == "yml") {
