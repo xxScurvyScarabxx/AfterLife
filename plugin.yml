@@ -3,7 +3,7 @@ main: atom\afterlife\Main
 version: 1.0.2
 api: 
   - 3.0.0 
-  - 3.3.2
+  - 3.5.5
 
 author: Atom
 
