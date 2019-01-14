@@ -2,7 +2,7 @@
 Fully featured kill/death scoring plugin plus custom death event
 
 
-![Total downloads](https://img.shields.io/badge/Downloads-2-blue.svg)
+![Poggit](https://poggit.pmmp.io/ci.shield/electrode-MP/AfterLife/AfterLife)
 [![Total views](http://hits.dwyl.io/Atomization/Afterlife.svg)](http://hits.dwyl.io/Atomization/Afterlife)
 
  - [x] Score points on Kill! `(+ gain xp)`
