@@ -47,9 +47,9 @@ use atom\afterlife\modules\GetData;
 use atom\afterlife\modules\NoPvP;
 use atom\afterlife\modules\LevelCounter;
 
-
-
 class Main extends PluginBase implements Listener {
+
+	public $mysqli;
 
 	public $config;
 	public $texts;
@@ -74,8 +74,12 @@ class Main extends PluginBase implements Listener {
 		$this->texts->save();
 		
 		#verifys plugin settings are loaded.
-        $this->getLogger()->notice(color::GOLD . count(array_keys($this->config->getAll())) . " levels loaded!");
-        $this->getLogger()->notice(color::GOLD . count(array_keys($this->texts->getAll())) . " floating texts loaded!");
+		$this->getLogger()->notice(count(array_keys($this->texts->getAll())) . " floating texts loaded!");
+		
+		#loads mysqli database
+		if ($this->config->get('type') === "online") {
+			$this->mysqlConnect();
+		}
 	}
 
 	/**
@@ -95,18 +99,18 @@ class Main extends PluginBase implements Listener {
 
 	public function onCommand (CommandSender $player, Command $cmd, string $label, array $args):bool {
 		if ($player instanceof Player) {
-			if ($cmd == "profile" || $cmd == "stats") {
-				if (!isset($args[0])) {
-					$this->getStats($player);
-				} else {
-					$target = $this->getServer()->getPlayerExact($args[0]);
-                    if($target !== null) {
-                        $this->getStats($target);
-                    } else {
-						$player->sendMessage(color::RED . "Player is not online");
-					}
-				}
-			}
+//			if ($cmd == "profile" || $cmd == "stats") {
+//				if (!isset($args[0])) {
+//					$this->getStats($player);
+//				} else {
+//					$target = $this->getServer()->getPlayerExact($args[0]);
+//                    if($target !== null) {
+//                        $this->getStats($target);
+//                    } else {
+//						$player->sendMessage(color::RED . "Player is not online");
+//					}
+//				}
+//			}
 
 			if ($this->config->get("texts-enabled") == true) {
 				if ($player->hasPermission('afterlife.admin')) {
@@ -189,6 +193,35 @@ class Main extends PluginBase implements Listener {
 	}
 
 
+	public function mysqlConnect () {
+		$server = $this->config->get('server');
+		$username = $this->config->get('username');
+		$password = $this->config->get('password');
+		$database = $this->config->get('database');
+
+		if (empty($server) || empty($username) || empty($database)) {
+			$this->getLogger()->warning("Please verify your SQL Credentials!");
+		} else {
+			$connection = mysqli_connect($server, $username, $password, $database);
+		
+			if (!$connection) {
+				$this->getLogger()->warning("Unable to connect to MySQL");
+				$this->getServer()->getPluginManager()->disablePlugin($this);
+				exit();
+			} else {
+				$this->mysqli = $connection;
+				$this->getLogger()->notice("connected to MySQL");
+			}
+		}
+	}
+
+
+	public function onDisable(): void {
+		if (isset($this->mysqli)) {
+			$this->mysqli->close();
+			$this->getLogger()->notice("Connection to database terminated!");
+		}
+	}
 
 /**
  * =========
