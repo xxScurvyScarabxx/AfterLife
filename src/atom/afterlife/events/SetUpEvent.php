@@ -72,7 +72,7 @@ class SetUpEvent implements Listener {
 
     public function save() {
         if ($this->plugin->config->get('type') !== "online") {
-            yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => 0, "xp" => 0, "kills" => 0, "deaths" => 0, "kill-streak" => 0, "kill/death-ratio" => 0]);
+            yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => 0, "xp" => 0, "kills" => 0, "deaths" => 0, "streak" => 0, "ratio" => 0]);
         } else {
             $sql = "INSERT INTO afterlife(name, kills, deaths, ratio, xp, level) VALUES ('$this->player', '0', '0', '0', '0', '0')";
             mysqli_query($this->database, $sql);
