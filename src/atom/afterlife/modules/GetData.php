@@ -24,17 +24,36 @@ class GetData {
                 $string = "kills";
                 break;
             case "kdr":
-                $string = "kill/death-ratio";
+                $string = "ratio";
                 break;
             case "streaks":
-                $string = "kill-streak";
+                $string = "streak";
         }
-        foreach($files as $file) {
-            if(pathinfo($file, PATHINFO_EXTENSION) == "yml") {
-                $yaml = file_get_contents($this->plugin->getDataFolder() . "players/" . $file);
-                $rawData = yaml_parse($yaml);
-                if(isset($rawData[$string])) {
-                    $stats[$rawData["name"]] = $rawData[$string];
+        if ($this->plugin->config->get('type') !== "online") {
+            foreach($files as $file) {
+                if(pathinfo($file, PATHINFO_EXTENSION) == "yml") {
+                    $yaml = file_get_contents($this->plugin->getDataFolder() . "players/" . $file);
+                    $rawData = yaml_parse($yaml);
+                    if(isset($rawData[$string])) {
+                        $stats[$rawData["name"]] = $rawData[$string];
+                    }
+                }
+            }
+        } else {
+            $sql = "SELECT * FROM afterlife;";
+            $result = mysqli_query($this->plugin->mysqli, $sql);
+            $check = mysqli_num_rows($result);
+            $db = array();
+            $names = array();
+            if ($check > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $db[] = $row;
+                }
+                foreach ($db as $key => $rawData) {
+                    array_shift($rawData);
+                    if(isset($rawData[$string])) {
+                        $stats[$rawData["name"]] = $rawData[$string];
+                    }
                 }
             }
         }
@@ -53,6 +72,5 @@ class GetData {
         }
         return "";
     }
-
 }
  
