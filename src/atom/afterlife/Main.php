@@ -79,6 +79,8 @@ class Main extends PluginBase implements Listener {
 		#loads mysqli database
 		if ($this->config->get('type') === "online") {
 			$this->mysqlConnect();
+			$this->mysqli->query("CREATE TABLE IF NOT EXISTS `afterlife`(`id` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `name` TINYTEXT NOT NULL, `kills` int(5) NOT NULL, `deaths` int(5) NOT NULL, `ratio` int(5) NOT NULL, `xp` int(5) NOT NULL, `level` int(5) NOT NULL, `streak` int(5) NOT NULL)");
+			$this->getLogger()->notice("Loaded Database");
 		}
 	}
 
@@ -89,28 +91,39 @@ class Main extends PluginBase implements Listener {
      * @param array $player
      */
 	public function addText(Vector3 $location, string $type = "title", $player = null) {
-        $typetitle = $this->config->get("texts-title")[$type];
-		// $typetitle = $this->texts->get($type);
-        $id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
-		$particle = new FloatingTextParticle($location, color::GOLD . "<<<<<>>>>>", $typetitle . "\n" . $this->getData($type));
-        $this->getServer()->getLevelByName($this->config->get("texts-world"))->addParticle($particle, $player);
-        $this->particles[$id] = $particle;
+		switch ($this->getServer()->getName()) {
+			case 'PocketMine-MP':
+				$typetitle = $this->config->get("texts-title")[$type];
+				$id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
+				$particle = new FloatingTextParticle($location, color::GOLD . "<<<<<>>>>>", $typetitle . "\n" . $this->getData($type));
+				$this->getServer()->getLevelByName($this->config->get("texts-world"))->addParticle($particle, $player);
+				$this->particles[$id] = $particle;
+				break;
+
+			case 'Altay':
+				$typetitle = $this->config->get("texts-title")[$type];
+				$id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
+				$particle = new FloatingTextParticle(color::GOLD . "<<<<<>>>>>", $typetitle . "\n" . $this->getData($type), $location);
+				$this->getServer()->getLevelByName($this->config->get("texts-world"))->addParticle($location, $particle);
+				$this->particles[$id] = $particle;
+				break;
+		}
     }
 
 	public function onCommand (CommandSender $player, Command $cmd, string $label, array $args):bool {
 		if ($player instanceof Player) {
-//			if ($cmd == "profile" || $cmd == "stats") {
-//				if (!isset($args[0])) {
-//					$this->getStats($player);
-//				} else {
-//					$target = $this->getServer()->getPlayerExact($args[0]);
-//                    if($target !== null) {
-//                        $this->getStats($target);
-//                    } else {
-//						$player->sendMessage(color::RED . "Player is not online");
-//					}
-//				}
-//			}
+			if ($cmd == "stats") {
+				if (!isset($args[0])) {
+					$this->getStats($player);
+				} else {
+					$target = $this->getServer()->getPlayerExact($args[0]);
+                   if($target !== null) {
+                       $this->getStats($target);
+                   } else {
+						$player->sendMessage(color::RED . "Player is not online");
+					}
+				}
+			}
 
 			if ($this->config->get("texts-enabled") == true) {
 				if ($player->hasPermission('afterlife.admin')) {
