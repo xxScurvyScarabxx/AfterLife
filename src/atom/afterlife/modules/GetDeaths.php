@@ -19,12 +19,7 @@ class GetDeaths {
             if(is_file($path)) {
                 $data = yaml_parse_file($path);
                 $this->data = $data;
-                $this->level = $data["level"];
-                $this->xp = $data["xp"];
-                $this->kills = $data["kills"];
                 $this->deaths = $data["deaths"];
-                $this->killStreak = $data["kill-streak"];
-                $this->ratio = $data["kill/death-ratio"];
             } else {
                 return;
             }
@@ -43,12 +38,7 @@ class GetDeaths {
                 }
                 if (in_array($this->player, $names)) {
                     $x = array_search($this->player, $names);
-                    $this->kills = $db[$x]['kills'];
                     $this->deaths = $db[$x]['deaths'];
-                    $this->ratio = $db[$x]['ratio'];
-                    $this->xp = $db[$x]['xp'];
-                    $this->level = $db[$x]['level'];
-                    $this->killStreak = $db[$x]['streak'];
                 }
             }
         }
