@@ -46,7 +46,7 @@ death-method: "custom"
 texts-enabled: true
 texts-world: "lobby"
 
-#how many players to display on leaderboard
+#how many players to display
 texts-top: 5
 
 #setts the title for each leaderboard
@@ -85,8 +85,7 @@ use-levels: true
 #use level up timer
 #adds xp over time
 #(example) stay online to gain xp
-# THIS IS A W.I.P (doesnt work yet)
-use-level-up-timer: false
+use-level-up-timer: true
 
 #amount of xp to be given on kill
 add-level-xp-amount: 50
@@ -96,6 +95,27 @@ loose-level-xp-amount: 10
 
 #how much xp is required for level up
 xp-levelup-ammount: 1000
+
+#-------------------------------------------------------------------------------------------------------------------------
+# DATA STORING!!!
+#
+# How you want to store data
+#
+# - online database (use if you have more than one server and want to sync kill score across all servers)
+# - local dadabase (DEFAULT) (use if you only have one single server)
+#
+# online database is complex to setup, use only if you know actly what is mysql is and how to operate a online database
+# online database totorial is coming soon to help in-experienced users!
+#-------------------------------------------------------------------------------------------------------------------------
+
+# - local - online
+database: "local"
+
+#if database is online... please enter credentials
+server: "localhost"
+username: ""
+password: ""
+database: ""
 ```
 ## 💰 Credits
 Icon made by Freepik from www.flaticon.com is licensed by CC 3.0 BY
