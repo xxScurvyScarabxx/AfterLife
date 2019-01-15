@@ -9,6 +9,10 @@ class LevelCounter {
     private $plugin;
     private $level;
     private $xp;
+    private $kills;
+    private $deaths;
+    private $killStreak;
+    private $ratio;
     private $data = null;
     private $player = null;
 
