@@ -65,8 +65,14 @@ class xpCalculator {
     }
 
     public function removeXp ($amount) {
-        $this->xp -= $amount;
-        $this->save();
+        if ($this->xp > 0) {
+            $this->xp -= $amount;
+            $this->save();
+        } 
+        if ($this->xp <= 0) {
+            $this->xp = 0;
+            $this->save();
+        }
     }
 
     public function getPath() {
