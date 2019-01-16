@@ -95,7 +95,7 @@ class Main extends PluginBase implements Listener {
 			case 'PocketMine-MP':
 				$typetitle = $this->config->get("texts-title")[$type];
 				$id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
-				$particle = new FloatingTextParticle($location, color::GOLD . "<<<<<>>>>>", $typetitle . "\n" . $this->getData($type));
+				$particle = new FloatingTextParticle($location, color::GOLD . "<<<<<>>>>>", $this->colorize($typetitle) . "\n" . $this->getData($type));
 				$this->getServer()->getLevelByName($this->config->get("texts-world"))->addParticle($particle, $player);
 				$this->particles[$id] = $particle;
 				break;
@@ -103,7 +103,7 @@ class Main extends PluginBase implements Listener {
 			case 'Altay':
 				$typetitle = $this->config->get("texts-title")[$type];
 				$id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
-				$particle = new FloatingTextParticle(color::GOLD . "<<<<<>>>>>", $typetitle . "\n" . $this->getData($type), $location);
+				$particle = new FloatingTextParticle(color::GOLD . "<<<<<>>>>>", $this->colorize($typetitle) . "\n" . $this->getData($type), $location);
 				$this->getServer()->getLevelByName($this->config->get("texts-world"))->addParticle($location, $particle);
 				$this->particles[$id] = $particle;
 				break;
