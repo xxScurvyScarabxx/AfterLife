@@ -73,14 +73,10 @@ class Main extends PluginBase implements Listener {
 		$this->texts = new Config($this->getDataFolder() . "texts.yml", Config::YAML);
 		$this->texts->save();
 		
-		#verifys plugin settings are loaded.
-		$this->getLogger()->notice(count(array_keys($this->texts->getAll())) . " floating texts loaded!");
-		
 		#loads mysqli database
 		if ($this->config->get('type') === "online") {
 			$this->mysqlConnect();
 			$this->mysqli->query("CREATE TABLE IF NOT EXISTS `afterlife`(`id` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `name` TINYTEXT NOT NULL, `kills` int(5) NOT NULL, `deaths` int(5) NOT NULL, `ratio` int(5) NOT NULL, `xp` int(5) NOT NULL, `level` int(5) NOT NULL, `streak` int(5) NOT NULL)");
-			$this->getLogger()->notice("Loaded Database");
 		}
 	}
 
