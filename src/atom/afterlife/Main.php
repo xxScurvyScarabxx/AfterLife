@@ -160,34 +160,7 @@ class Main extends PluginBase implements Listener {
 	
 	public function getStats (Player $player) {
 		switch ($this->config->get("profile-method")) {
-			case "form":
-				if (($api = $this->getServer()->getPluginManager()->getPlugin("FormAPI")) !== null) {
-					$form = $api->createSimpleForm(function (Player $player, ?int $result = null) {
-						if ($result === null) {
-							return true;
-						}
-
-						switch ($result) {
-							case 0:
-								return true;
-								break;
-						}
-					});
-
-					$form->setTitle(color::BOLD.color::LIGHT_PURPLE.$player." Profile");
-					$form->setContent(
-						color::YELLOW."\nCurrent Win Streak ".color::GREEN.$this->getStreak($player->getName())."\n\n".
-						color::RED."\nKills: ".color::GREEN.$this->getKills($player->getName()).
-						color::RED."\nDeaths: ".color::GREEN.$this->getDeaths($player->getName()).
-						color::RED."\nK/D Ratio: ".color::BLUE.$this->getKdr($player->getName()).
-						color::RED."\n\n\nLevel: ".color::BLUE.$this->getLevel($player->getName()).
-						color::RED."\nExperience: ".color::BLUE.$this->getXp($player->getName())."\n\n\n\n\n");
-					$form->addButton(color::BOLD. "Exit");
-					$form->sendToPlayer($player);
-				} else {
-					$player->sendMessage(color::LIGHT_PURPLE."Please enable FormAPI else use 'stardard' in config!");
-				}
-				break;
+			// Remove FormAPI to fix later
 
 			case "standard":
 				$player->sendMessage(color::LIGHT_PURPLE."*************");
