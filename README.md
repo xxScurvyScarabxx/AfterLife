@@ -1,4 +1,4 @@
-# AfterLife Features: [![Poggit-CI](https://poggit.pmmp.io/ci.badge/electrode-MP/AfterLife/~)](https://poggit.pmmp.io/ci/electrode-MP/AfterLife)
+# AfterLife Features
 Fully featured kill/death scoring plugin plus custom death event! [![Total views](http://hits.dwyl.io/Atomization/Afterlife.svg)](http://hits.dwyl.io/Atomization/Afterlife)
 
 <p align="center">
