@@ -4,4 +4,7 @@ branches:
 projects:
   AfterLife:
     path: ""
+    libs:
+    - src /thebigsmileXD/customui/customui
+    version: "^3.0.0"
 ...
