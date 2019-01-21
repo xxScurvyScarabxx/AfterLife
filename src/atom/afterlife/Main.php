@@ -3,34 +3,38 @@
 namespace atom\afterlife;
 
 
-#Main Files
+# Main Files
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\plugin\PluginBase;
 
-#events
+# events
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 
-#calculating
+# calculating
 use pocketmine\math\Vector3;
 
 #commands
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
-#utils
+# utils
+use pocketmine\item\Item;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat as color;
-
-#other
-use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\level\particle\FloatingTextParticle;
 
-#plugin files
+# customui
+use xenialdan\customui\API as UIAPI;
+use xenialdan\customui\elements\Button;
+use xenialdan\customui\windows\SimpleForm;
+
+# plugin files
 use atom\afterlife\events\SetUpEvent;
 use atom\afterlife\events\KillEvent;
 use atom\afterlife\events\CustomDeath;
@@ -54,11 +58,14 @@ class Main extends PluginBase implements Listener {
 	public $config;
 	public $texts;
 	public $playerData = [];
-    public $particles = [];
+	public $particles = [];
+	
+	/** @var int[] **/
+	public static $uis = [];
 	
 	public function onEnable() {
 
-		#Registers the plugin events.
+		# Registers the plugin events.
 		$this->getServer()->getPluginManager()->registerEvents(new SetUpEvent($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new KillEvent($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new CustomDeath($this), $this);
@@ -66,19 +73,48 @@ class Main extends PluginBase implements Listener {
 		$this->saveDefaultConfig();
 		$this->reloadConfig();
 
-		#Creats config files to store plugin settings for easy editing.
+		# Creats config files to store plugin settings for easy editing.
         @mkdir($this->getDataFolder());
 		@mkdir($this->getDataFolder() . "players/");
         $this->config = $this->getConfig();
 		$this->texts = new Config($this->getDataFolder() . "texts.yml", Config::YAML);
 		$this->texts->save();
 		
-		#loads mysqli database
+		# loads mysqli database
 		if ($this->config->get('type') === "online") {
 			$this->mysqlConnect();
 			$this->mysqli->query("CREATE TABLE IF NOT EXISTS `afterlife`(`id` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `name` TINYTEXT NOT NULL, `kills` int(5) NOT NULL, `deaths` int(5) NOT NULL, `ratio` int(5) NOT NULL, `xp` int(5) NOT NULL, `level` int(5) NOT NULL, `streak` int(5) NOT NULL)");
 		}
+
+		# registers forms
+		// $this->registerUIs();
+
 	}
+
+	private function statsUI(Player $player){
+		switch ($this->getServer()->getName()) {
+			case 'PocketMine-MP':
+				$ui = new SimpleForm('Player Stats',
+				color::YELLOW."\nCurrent Win Streak ".color::BLUE.$this->getStreak($player->getName())."\n\n".
+				color::RED."\nKills: ".color::GREEN.$this->getKills($player->getName()).
+				color::RED."\nDeaths: ".color::GREEN.$this->getDeaths($player->getName()).
+				color::RED."\nK/D Ratio: ".color::GREEN.$this->getKdr($player->getName()).
+				color::RED."\n\n\nLevel: ".color::GREEN.$this->getLevel($player->getName()).
+				color::RED."\nExperience: ".color::GREEN.$this->getXp($player->getName())."\n\n\n"
+				);
+				$button = new Button(color::RED.'Close'); 
+				$button->addImage(Button::IMAGE_TYPE_PATH, "textures/items/stick");
+				$ui->addButton($button);
+				self::$uis['statsui'] = UIAPI::addUI($this, $ui);
+				var_dump($button);
+				break;
+				
+			default;
+				$player->sendMessage("Forms are not *YET* supported on this fork... please choose 'standard in config'");
+				break;
+		}
+	}
+
 
 	/**
      * Initializes Floating Texts.
@@ -160,7 +196,36 @@ class Main extends PluginBase implements Listener {
 	
 	public function getStats (Player $player) {
 		switch ($this->config->get("profile-method")) {
-			// Remove FormAPI to fix later
+			case "form":
+				$this->statsUI($player);
+				UIAPI::showUIbyID($this, self::$uis['statsui'], $player);
+				// if (($api = $this->getServer()->getPluginManager()->getPlugin("FormAPI")) !== null) {
+				// 	$form = $api->createSimpleForm(function (Player $player, ?int $result = null) {
+				// 		if ($result === null) {
+				// 			return true;
+				// 		}
+
+				// 		switch ($result) {
+				// 			case 0:
+				// 				return true;
+				// 				break;
+				// 		}
+				// 	});
+
+				// 	$form->setTitle(color::BOLD.color::LIGHT_PURPLE.$player." Profile");
+				// 	$form->setContent(
+				// 		color::YELLOW."\nCurrent Win Streak ".color::GREEN.$this->getStreak($player->getName())."\n\n".
+				// 		color::RED."\nKills: ".color::GREEN.$this->getKills($player->getName()).
+				// 		color::RED."\nDeaths: ".color::GREEN.$this->getDeaths($player->getName()).
+				// 		color::RED."\nK/D Ratio: ".color::BLUE.$this->getKdr($player->getName()).
+				// 		color::RED."\n\n\nLevel: ".color::BLUE.$this->getLevel($player->getName()).
+				// 		color::RED."\nExperience: ".color::BLUE.$this->getXp($player->getName())."\n\n\n\n\n");
+				// 	$form->addButton(color::BOLD. "Exit");
+				// 	$form->sendToPlayer($player);
+				// } else {
+				// 	$player->sendMessage(color::LIGHT_PURPLE."Please enable FormAPI else use 'stardard' in config!");
+				// }
+				break;
 
 			case "standard":
 				$player->sendMessage(color::LIGHT_PURPLE."*************");
@@ -193,6 +258,7 @@ class Main extends PluginBase implements Listener {
 			} else {
 				$this->mysqli = $connection;
 				$this->getLogger()->notice("connected to MySQL");
+				$this->getLogger()->notice("Loaded Database");
 			}
 		}
 	}
@@ -348,6 +414,6 @@ class Main extends PluginBase implements Listener {
      */
     public function colorize(string $text) {
         $color = str_replace("&", "§", $text);
-        return $color;
+		return $color;
     }
 }
