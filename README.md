@@ -2,11 +2,15 @@
 Fully featured kill/death scoring plugin plus custom death event! [![Total views](http://hits.dwyl.io/Atomization/Afterlife.svg)](http://hits.dwyl.io/Atomization/Afterlife)
 
 <p align="center">
+ <a href="https://poggit.pmmp.io/ci/Aurora-MC/AfterLife/AfterLife">
+  <img src="https://poggit.pmmp.io/ci.shield/Aurora-MC/Afterlife/Afterlife?style=flat-square">
+ </a>
  <a href="https://poggit.pmmp.io/p/Afterlife"><img src="https://poggit.pmmp.io/shield.state/Afterlife"></a>
  <a href="https://poggit.pmmp.io/p/Afterlife"><img src="https://poggit.pmmp.io/shield.dl/Afterlife"></a>
+ <a href="https://poggit.pmmp.io/p/Afterlife"><img src="https://poggit.pmmp.io/shield.api/Afterlife"></a>
 </p>
 
- - [x] The ability to sync data across muiltiple servers in a network `WIP` not 100% functional yet
+ - [x] The ability to sync data across muiltiple servers in a network
  - [x] Score points on Kill! `(+ gain xp)`
  - [x] Losse xp on Death!
  - [x] Calculates kill/death ratio 
