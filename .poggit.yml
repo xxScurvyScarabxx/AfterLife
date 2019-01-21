@@ -1,4 +1,4 @@
---- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/Aurora-Development/AfterLife
+--- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/Aurora-MC/AfterLife
 branches:
 - master
 projects:
