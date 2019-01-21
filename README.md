@@ -1,6 +1,11 @@
 # AfterLife Features: [![Poggit-CI](https://poggit.pmmp.io/ci.badge/electrode-MP/AfterLife/~)](https://poggit.pmmp.io/ci/electrode-MP/AfterLife)
 Fully featured kill/death scoring plugin plus custom death event! [![Total views](http://hits.dwyl.io/Atomization/Afterlife.svg)](http://hits.dwyl.io/Atomization/Afterlife)
 
+<p align="center">
+ <a href="https://poggit.pmmp.io/p/Afterlife"><img src="https://poggit.pmmp.io/shield.state/Afterlife"></a>
+ <a href="https://poggit.pmmp.io/p/Afterlife"><img src="https://poggit.pmmp.io/shield.dl/Afterlife"></a>
+</p>
+
  - [x] The ability to sync data across muiltiple servers in a network `WIP` not 100% functional yet
  - [x] Score points on Kill! `(+ gain xp)`
  - [x] Losse xp on Death!
@@ -34,6 +39,7 @@ death-method: "custom"
 | `kills` |
 | `kdr` |
 | `streaks` |
+| `xp` *comming soon* | 
 
 ### Full Config
 ```yml
