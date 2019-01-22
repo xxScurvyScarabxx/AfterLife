@@ -20,7 +20,7 @@ class GetStreak {
             if(is_file($path)) {
                 $data = yaml_parse_file($path);
                 $this->data = $data;
-                $this->streak = $data["kill-streak"];
+                $this->streak = $data["streak"];
             } else {
                 return;
             }
