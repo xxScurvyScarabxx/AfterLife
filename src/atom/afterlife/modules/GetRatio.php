@@ -23,7 +23,7 @@ class GetRatio {
                 $this->data = $data;
                 $this->kills = $data["kills"];
                 $this->deaths = $data["deaths"];
-                $this->ratio = $data["kill/death-ratio"];
+                $this->ratio = $data["ratio"];
             } else {
                 return;
             }
