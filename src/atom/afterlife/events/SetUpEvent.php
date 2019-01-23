@@ -56,13 +56,14 @@ class SetUpEvent implements Listener {
     }
 
     public function setText(string $name) {
-        foreach($this->plugin->texts->getAll() as $loc => $type) {
-        $pos = explode("_", $loc);
-            if(isset($pos[1])) {
-                $v3 = new Vector3((float) $pos[0],(float) $pos[1],(float) $pos[2]);
-                $this->plugin->addText($v3, $type, [$this->plugin->getServer()->getPlayerExact($name)]);
+        foreach ($this->plugin->texts->getAll() as $level => $array) {
+            foreach ($array as $loc => $type) {
+                $pos = explode("_", $loc);
+                if(isset($pos[1])) {
+                    $v3 = new Vector3((float) $pos[0],(float) $pos[1],(float) $pos[2]);
+                    $this->plugin->addText($v3, $type, [$this->plugin->getServer()->getPlayerExact($name)]);
+                }
             }
-
         }
     }
 
