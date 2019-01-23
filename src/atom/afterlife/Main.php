@@ -164,7 +164,8 @@ class Main extends PluginBase implements Listener {
 							if (in_array($args[0], ["levels", "kills", "kdr", "streaks"])) {
 
 								$possition = implode("_", [round($player->getX(), 2), round($player->getY(), 2) + 1.7, round($player->getZ(), 2)]);
-								$this->texts->set($possition, $args[0]);
+								$value = [$possition=>$args[0]];
+								$this->texts->set($player->getLevel()->getName(), $value);
 								$this->texts->save();
 								$possition = $player->asVector3();
 								if ($player->getLevel() === $this->getServer()->getLevelByName($this->config->get("texts-world"))) {
