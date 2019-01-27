@@ -59,7 +59,7 @@ class CustomDeath implements Listener {
                     There should be `removeParticle();` but there isnt :(
                     */
                     for ($i=0; $i <= 10; $i++) { 
-                        $this->sendText($players->getName());
+                        // $this->sendText($players->getName());
                     }
                 }
             }
