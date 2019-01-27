@@ -1,6 +1,5 @@
 # Important!
-*new version requires new updated file in config... delete `texts.yml` and a new one will be generated automaticly
-this file stores the Floating texts, and is has been changed.
+*new version requires new updated file in config... delete `texts.yml` and a new one will be generated automaticly... this file stores the Floating texts, and it has been changed.
 
 # AfterLife Features
 Fully featured kill/death scoring plugin plus custom death event! [![Total views](http://hits.dwyl.io/Atomization/Afterlife.svg)](http://hits.dwyl.io/Atomization/Afterlife)
