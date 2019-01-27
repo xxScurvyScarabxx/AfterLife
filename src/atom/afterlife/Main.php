@@ -14,9 +14,11 @@ use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityLevelChangeEvent;
 
 # calculating
 use pocketmine\math\Vector3;
+use pocketmine\level\Position;
 
 #commands
 use pocketmine\command\Command;
@@ -30,7 +32,7 @@ use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\level\particle\FloatingTextParticle;
 
 # customui
-use xenialdan\customui\API as UIAPI;
+use xenialdan\customui\API as Form;
 use xenialdan\customui\elements\Button;
 use xenialdan\customui\windows\SimpleForm;
 
@@ -51,6 +53,12 @@ use atom\afterlife\modules\GetData;
 use atom\afterlife\modules\NoPvP;
 use atom\afterlife\modules\LevelCounter;
 
+
+
+use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\block\BlockFactory;
+
 class Main extends PluginBase implements Listener {
 
 	public $mysqli;
@@ -59,6 +67,7 @@ class Main extends PluginBase implements Listener {
 	public $texts;
 	public $playerData = [];
 	public $particles = [];
+	public $ftps = [];
 	
 	/** @var int[] **/
 	public static $uis = [];
@@ -70,6 +79,8 @@ class Main extends PluginBase implements Listener {
 		$this->getServer()->getPluginManager()->registerEvents(new KillEvent($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new CustomDeath($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new NoPvP($this), $this);
+		$this->getServer()->getPluginManager()->registerEvents($this, $this);
+
 		$this->saveDefaultConfig();
 		$this->reloadConfig();
 
@@ -85,10 +96,6 @@ class Main extends PluginBase implements Listener {
 			$this->mysqlConnect();
 			$this->mysqli->query("CREATE TABLE IF NOT EXISTS `afterlife`(`id` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `name` TINYTEXT NOT NULL, `kills` int(5) NOT NULL, `deaths` int(5) NOT NULL, `ratio` int(5) NOT NULL, `xp` int(5) NOT NULL, `level` int(5) NOT NULL, `streak` int(5) NOT NULL)");
 		}
-
-		# registers forms
-		// $this->registerUIs();
-
 	}
 
 	private function statsUI(Player $player){
@@ -105,7 +112,7 @@ class Main extends PluginBase implements Listener {
 				$button = new Button(color::RED.'Close'); 
 				$button->addImage(Button::IMAGE_TYPE_PATH, "textures/items/stick");
 				$ui->addButton($button);
-				self::$uis['statsui'] = UIAPI::addUI($this, $ui);
+				self::$uis['statsui'] = Form::addUI($this, $ui);
 				var_dump($button);
 				break;
 				
@@ -122,14 +129,13 @@ class Main extends PluginBase implements Listener {
      * @param string $type
      * @param array $player
      */
-	public function addText(Vector3 $location, string $type = "title", $player = null) {
+	public function addText(Vector3 $location, string $type = "title", $player) {
 		switch ($this->getServer()->getName()) {
 			case 'PocketMine-MP':
-				$typetitle = $this->config->get("texts-title")[$type];
-				$id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
-				$particle = new FloatingTextParticle($location, color::GOLD . "<<<<<>>>>>", $this->colorize($typetitle) . "\n" . $this->getData($type));
-				$this->getServer()->getLevelByName($this->config->get("texts-world"))->addParticle($particle, $player);
-				$this->particles[$id] = $particle;
+				$title = $this->config->get("texts-title")[$type];
+				$particle = new FloatingTextParticle($location, $this->colorize($title) . "\n" . $this->getData($type));
+				$player->getLevel()->addParticle($particle, [$player]);
+				$this->ftps[$player->getName()][] = $particle;
 				break;
 
 			case 'Altay':
@@ -141,6 +147,27 @@ class Main extends PluginBase implements Listener {
 				break;
 		}
     }
+
+	public function levelChangeEvent(EntityLevelChangeEvent $action) {
+		$player = $action->getEntity();
+		$target = $action->getTarget()->getName();
+		$levels = [];
+		$ftps = $this->ftps[$player->getName()];
+		foreach ($this->texts->getAll() as $loc => $array) {
+			foreach ($array as $level => $type) {
+				foreach ($ftps as $particle) {
+					array_push($levels, $level);
+					if (!in_array($target, $levels)) {
+						$particle->setInvisible();
+						$player->getLevel()->addParticle($particle, [$player]);
+					} else {
+						$particle->setInvisible(false);
+						$player->getLevel()->addParticle($particle, [$player]);
+					}
+				}
+			}
+		}
+	}
 
 	public function onCommand (CommandSender $player, Command $cmd, string $label, array $args):bool {
 		if ($player instanceof Player) {
@@ -164,22 +191,27 @@ class Main extends PluginBase implements Listener {
 							if (in_array($args[0], ["levels", "kills", "kdr", "streaks"])) {
 
 								$possition = implode("_", [round($player->getX(), 2), round($player->getY(), 2) + 1.7, round($player->getZ(), 2)]);
-								$value = [$possition=>$args[0]];
-								$this->texts->set($player->getLevel()->getName(), $value);
+								$value = [$player->getLevel()->getName()=>$args[0]];
+								$this->texts->set($possition, $value);
 								$this->texts->save();
-								$possition = $player->asVector3();
+								$possition = new Position($player->getX(), $player->getY(), $player->getZ(), $player->getLevel());
 								if ($player->getLevel() === $this->getServer()->getLevelByName($this->config->get("texts-world"))) {
-									$this->addText($possition, $args[0], null);
+									$this->addText($possition, $args[0], $player);
 									$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
 								} else {
 									$player->sendMessage(color::RED."You are not in the world spesified in the config to spawn floating texts...");
 									$player->sendMessage(color::RED."Pleae edit config");
 								}
 							} elseif ((in_array($args[0], ["del", "remove", "delete"]))) {
-								// comming soon
+                                // coming soon
+							} elseif ((in_array($args[0], ["debug"]))) {
+								// $type = "Human";
+								// $name = $player->getDisplayName();
+								// $nbt = $this->makeNBT($type, $player, $name);
+								// Entity::createEntity($type, $player->getLevel(), $nbt);
 							}
 						} else {
-							$player->sendMessage(color::RED . "Please choose \n ---kills, \n ---levels, \n ---kdr, \n ---streaks, \nor delete");
+							$player->sendMessage(color::RED . "Please choose \n ---kills, \n ---levels, \n ---kdr, \n ---streaks");
 						}
 					}
 				} else {
@@ -194,38 +226,12 @@ class Main extends PluginBase implements Listener {
 
 		return true;
 	}
-	
+
 	public function getStats (Player $player) {
 		switch ($this->config->get("profile-method")) {
 			case "form":
 				$this->statsUI($player);
-				UIAPI::showUIbyID($this, self::$uis['statsui'], $player);
-				// if (($api = $this->getServer()->getPluginManager()->getPlugin("FormAPI")) !== null) {
-				// 	$form = $api->createSimpleForm(function (Player $player, ?int $result = null) {
-				// 		if ($result === null) {
-				// 			return true;
-				// 		}
-
-				// 		switch ($result) {
-				// 			case 0:
-				// 				return true;
-				// 				break;
-				// 		}
-				// 	});
-
-				// 	$form->setTitle(color::BOLD.color::LIGHT_PURPLE.$player." Profile");
-				// 	$form->setContent(
-				// 		color::YELLOW."\nCurrent Win Streak ".color::GREEN.$this->getStreak($player->getName())."\n\n".
-				// 		color::RED."\nKills: ".color::GREEN.$this->getKills($player->getName()).
-				// 		color::RED."\nDeaths: ".color::GREEN.$this->getDeaths($player->getName()).
-				// 		color::RED."\nK/D Ratio: ".color::BLUE.$this->getKdr($player->getName()).
-				// 		color::RED."\n\n\nLevel: ".color::BLUE.$this->getLevel($player->getName()).
-				// 		color::RED."\nExperience: ".color::BLUE.$this->getXp($player->getName())."\n\n\n\n\n");
-				// 	$form->addButton(color::BOLD. "Exit");
-				// 	$form->sendToPlayer($player);
-				// } else {
-				// 	$player->sendMessage(color::LIGHT_PURPLE."Please enable FormAPI else use 'stardard' in config!");
-				// }
+				Form::showUIbyID($this, self::$uis['statsui'], $player);
 				break;
 
 			case "standard":
