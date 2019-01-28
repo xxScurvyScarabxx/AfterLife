@@ -1,6 +1,9 @@
 # Important!
 *new version requires new updated file in config... delete `texts.yml` and a new one will be generated automaticly... this file stores the Floating texts, and it has been changed.
 
+If running this plugin from source, you will need the <a href="https://poggit.pmmp.io/p/DEvirion">DEvirion</a> plugin and the virion library
+<a href="https://poggit.pmmp.io/ci/thebigsmileXD/customui/customui">customUI</a> **ONLY** if you wish to use forms as the method to display stats
+
 # AfterLife Features
 Fully featured kill/death scoring plugin plus custom death event!
 
