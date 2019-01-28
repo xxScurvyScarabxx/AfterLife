@@ -76,7 +76,7 @@ class KillCounter{
 
     public function save() {
         if ($this->plugin->config->get('type') !== "online") {
-            yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "kill-streak" => $this->killStreak, "kill/death-ratio" => $this->ratio]);
+            yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
         } else {
             $sql = "UPDATE afterlife SET kills='$this->kills', streak='$this->killStreak' WHERE name='$this->player'";
             mysqli_query($this->plugin->mysqli, $sql);
