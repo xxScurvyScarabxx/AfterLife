@@ -28,8 +28,8 @@ class DeathCounter{
                 $this->xp = $data["xp"];
                 $this->kills = $data["kills"];
                 $this->deaths = $data["deaths"];
-                $this->killStreak = $data["kill-streak"];
-                $this->ratio = $data["kill/death-ratio"];
+                $this->killStreak = $data["streak"];
+                $this->ratio = $data["ratio"];
             } else {
                 return;
             }
