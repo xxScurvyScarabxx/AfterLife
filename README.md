@@ -81,7 +81,6 @@ no-PvP-in-level:
   - "world3"
 
 #choose to use unique "form" or "standard" message to display stats
-#form requires FormApi plugin
 #methods => "form" "standard"
 profile-method: "form"
 
