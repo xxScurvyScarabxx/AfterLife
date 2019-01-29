@@ -1,8 +1,6 @@
-#Set world to what world you want the texts to spawn in. Currently only supports one world.
 #enable floating texts.
 #true: false:
 texts-enabled: true
-texts-world: "lobby"
 
 #how many players to display
 texts-top: 5
