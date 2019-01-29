@@ -62,7 +62,11 @@ class DeathCounter{
     public function addDeath() {
         $this->deaths += 1;
         $this->killStreak = 0;
-        $this->ratio = round(($this->kills / $this->deaths), 1);
+        if ($this->deaths > 0) {
+            $this->ratio = round(($this->kills / $this->deaths), 1);
+        } else {
+            $this->ratio = 1;
+        }
         $this->save();
     }
 
