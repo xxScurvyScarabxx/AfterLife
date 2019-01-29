@@ -67,6 +67,7 @@ class KillCounter{
             $this->plugin->addXp($this->player, $this->plugin->config->get("add-level-xp-amount"));
         }
 
+        $this->ratio = round(($this->kills / $this->deaths), 1);
         $this->save();
     }
 
@@ -78,7 +79,7 @@ class KillCounter{
         if ($this->plugin->config->get('type') !== "online") {
             yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
         } else {
-            $sql = "UPDATE afterlife SET kills='$this->kills', streak='$this->killStreak' WHERE name='$this->player'";
+            $sql = "UPDATE afterlife SET kills='$this->kills', ratio='$this->ratio', streak='$this->killStreak' WHERE name='$this->player'";
             mysqli_query($this->plugin->mysqli, $sql);
         }
     }
