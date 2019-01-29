@@ -78,7 +78,7 @@ class LevelCounter {
         if ($this->plugin->config->get('type') !== "online") {
             yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
         } else {
-            $sql = "UPDATE afterlife SET level='$this->level' WHERE name='$this->player'";
+            $sql = "UPDATE afterlife SET level='$this->level', xp='$this->xp' WHERE name='$this->player'";
             mysqli_query($this->plugin->mysqli, $sql);
         }
     }
