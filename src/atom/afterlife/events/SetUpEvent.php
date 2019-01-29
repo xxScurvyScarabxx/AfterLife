@@ -54,29 +54,32 @@ class SetUpEvent implements Listener {
                 $this->save();
             }
         }
-        $this->setText($this->player);
+        $this->setText($player);
     }
 
-    public function setText(string $name) {
-        foreach ($this->plugin->texts->getAll() as $loc => $array) {
-            foreach ($array as $level => $type) {
-                $pos = explode("_", $loc);
-                if(isset($pos[1])) {
-                    $possition = new Position($pos[0], $pos[1], $pos[2], $this->plugin->getServer()->getLevelByName($level));
-                    $this->plugin->addText($possition, $type, $this->plugin->getServer()->getPlayerExact($name));
+    public function setText(Player $player) {
+        $name = $player->getName();
+        $files = scandir($this->plugin->getDataFolder() . 'leaderboards/');
+        foreach ($files as $file) {
+            $path = $this->plugin->getDataFolder(). 'leaderboards/' . $file;
+            if (is_file($path)) {
+                $data = yaml_parse_file($path);
+                $level = $data['level'];
+                $type = $data['type'];
+                $xx = $data['xx'];
+                $yy = $data['yy'];
+                $zz = $data['zz'];
+                $possition = new Position($xx, $yy, $zz, $this->plugin->getServer()->getLevelByName($level));
+                $this->plugin->addText($possition, $level, $type, $this->plugin->getServer()->getPlayerExact($name));
+                if (!isset($this->plugin->ftps[$type][$player->getLevel()->getName()])) {
+                    $ftp = $this->plugin->ftps[$type][$level];
+                    $ftp->setInvisible();
+                    $player->getLevel()->addParticle($ftp, [$player]);
+                } else {
+                    $ftp = $this->plugin->ftps[$type][$level];
+                    $ftp->setInvisible(false);
+                    $player->getLevel()->addParticle($ftp, [$player]);
                 }
-                $levels = [];
-		        $ftps = $this->plugin->ftps[$name];
-                foreach ($ftps as $particle) {
-					array_push($levels, $level);
-					if (!in_array($this->playerOBJ->getLevel()->geTName(), $levels)) {
-						$particle->setInvisible();
-						$this->playerOBJ->getLevel()->addParticle($particle, [$this->playerOBJ]);
-					} else {
-						$particle->setInvisible(false);
-						$this->playerOBJ->getLevel()->addParticle($particle, [$this->playerOBJ]);
-					}
-				}
             }
         }
     }
