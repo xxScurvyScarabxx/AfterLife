@@ -198,13 +198,15 @@ class Main extends PluginBase implements Listener {
 								$z = round($player->getZ(), 1);
 								yaml_emit_file($this->getDataFolder() . "leaderboards/" . $args[0] . "_" . $level . ".yml", ['level'=>$level, 'type'=>$args[0], 'xx'=>$x, 'yy'=>$y, 'zz'=>$z]);
 								$possition = new Position($player->getX(), $player->getY() + 1.7, $player->getZ(), $player->getLevel());
-								if ($player->getLevel() === $this->getServer()->getLevelByName($this->config->get("texts-world"))) {
-									$this->addText($possition, $player->getLevel()->getName(), $args[0], $player);
-									$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
-								} else {
-									$player->sendMessage(color::RED."You are not in the world spesified in the config to spawn floating texts...");
-									$player->sendMessage(color::RED."Pleae edit config");
-								}
+								$this->addText($possition, $player->getLevel()->getName(), $args[0], $player);
+								$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
+								// if ($player->getLevel() === $this->getServer()->getLevelByName($this->config->get("texts-world"))) {
+								// 	$this->addText($possition, $player->getLevel()->getName(), $args[0], $player);
+								// 	$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
+								// } else {
+								// 	$player->sendMessage(color::RED."You are not in the world spesified in the config to spawn floating texts...");
+								// 	$player->sendMessage(color::RED."Pleae edit config");
+								// }
 							} elseif ((in_array($args[0], ["del", "remove", "delete"]))) {
                                 // coming soon
 							} elseif ((in_array($args[0], ["debug"]))) {
