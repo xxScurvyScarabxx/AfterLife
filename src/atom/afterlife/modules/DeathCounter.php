@@ -62,6 +62,7 @@ class DeathCounter{
     public function addDeath() {
         $this->deaths += 1;
         $this->killStreak = 0;
+        $this->ratio = round(($this->kills / $this->deaths), 1);
         $this->save();
     }
 
@@ -73,7 +74,7 @@ class DeathCounter{
         if ($this->plugin->config->get('type') !== "online") {
             yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
         } else {
-            $sql = "UPDATE afterlife SET deaths='$this->deaths', streak='0' WHERE name='$this->player'";
+            $sql = "UPDATE afterlife SET deaths='$this->deaths', ratio='$this->ratio', streak='0' WHERE name='$this->player'";
             mysqli_query($this->plugin->mysqli, $sql);
         }
     }
