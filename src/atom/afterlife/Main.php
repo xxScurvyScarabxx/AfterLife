@@ -89,8 +89,6 @@ class Main extends PluginBase implements Listener {
 		@mkdir($this->getDataFolder() . 'players/');
 		@mkdir($this->getDataFolder() . 'leaderboards/');
         $this->config = $this->getConfig();
-		// $this->texts = new Config($this->getDataFolder() . "texts.yml", Config::YAML);
-		// $this->texts->save();
 		
 		# loads mysqli database
 		if ($this->config->get('type') === "online") {
@@ -192,29 +190,20 @@ class Main extends PluginBase implements Listener {
 					if ($cmd == "setleaderboard") {
 						if (isset($args[0])) {
 							if (in_array($args[0], ["levels", "kills", "kdr", "streaks"])) {
-								$level = $player->getLevel()->getName();
-								$x = round($player->getX(), 1);
-								$y = round($player->getY(), 1) + 1.7;
-								$z = round($player->getZ(), 1);
-								yaml_emit_file($this->getDataFolder() . "leaderboards/" . $args[0] . "_" . $level . ".yml", ['level'=>$level, 'type'=>$args[0], 'xx'=>$x, 'yy'=>$y, 'zz'=>$z]);
-								$possition = new Position($player->getX(), $player->getY() + 1.7, $player->getZ(), $player->getLevel());
-								$this->addText($possition, $player->getLevel()->getName(), $args[0], $player);
-								$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
-								// if ($player->getLevel() === $this->getServer()->getLevelByName($this->config->get("texts-world"))) {
-								// 	$this->addText($possition, $player->getLevel()->getName(), $args[0], $player);
-								// 	$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
-								// } else {
-								// 	$player->sendMessage(color::RED."You are not in the world spesified in the config to spawn floating texts...");
-								// 	$player->sendMessage(color::RED."Pleae edit config");
-								// }
+								if (!isset($this->ftps[$args[0]][$player->getLevel()->getName()])) {
+									$level = $player->getLevel()->getName();
+									$x = round($player->getX(), 1);
+									$y = round($player->getY(), 1) + 1.7;
+									$z = round($player->getZ(), 1);
+									yaml_emit_file($this->getDataFolder() . "leaderboards/" . $args[0] . "_" . $level . ".yml", ['level'=>$level, 'type'=>$args[0], 'xx'=>$x, 'yy'=>$y, 'zz'=>$z]);
+									$possition = new Position($player->getX(), $player->getY() + 1.7, $player->getZ(), $player->getLevel());
+									$this->addText($possition, $player->getLevel()->getName(), $args[0], $player);
+									$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
+								} else {
+									$player->sendMessage('Error:'.' '.$args[0].' '.'Floating text already exists in'.' '.$player->getLevel()->getName());
+								}
 							} elseif ((in_array($args[0], ["del", "remove", "delete"]))) {
                                 // coming soon
-							} elseif ((in_array($args[0], ["debug"]))) {
-								// var_dump($this->ftps);
-								// $type = "Human";
-								// $name = $player->getDisplayName();
-								// $nbt = $this->makeNBT($type, $player, $name);
-								// Entity::createEntity($type, $player->getLevel(), $nbt);
 							}
 						} else {
 							$player->sendMessage(color::RED . "Please choose \n ---kills, \n ---levels, \n ---kdr, \n ---streaks");
