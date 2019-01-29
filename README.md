@@ -1,11 +1,11 @@
 # Important!
-*new version requires new updated file in config... delete `texts.yml` and a new one will be generated automaticly... this file stores the Floating texts, and it has been changed.
+Floating text leaderboards have been rewriten in verson `3.2.8`, if updating... delete `texts.yml` in your config as there is now no use for it, it will be regenerated automaticly inside of `leaderboards/` folder in your config...
 
 If running this plugin from source, you will need the <a href="https://poggit.pmmp.io/p/DEvirion">DEvirion</a> plugin and the virion library
 <a href="https://poggit.pmmp.io/ci/thebigsmileXD/customui/customui">customUI</a> **ONLY** if you wish to use forms as the method to display stats
 
 # AfterLife Features
-Fully featured kill/death scoring plugin plus custom death event!
+Fully featured kill/death scoring plugin with custom death event!
 
 <p align="center">
  <a href="http://hits.dwyl.io/Atomization/Afterlife"><img src="http://hits.dwyl.io/Atomization/Afterlife.svg"></a>
@@ -32,7 +32,7 @@ Fully featured kill/death scoring plugin plus custom death event!
  - [ ] Add Longest Bow Kills & Hits Leaderboards
  - [ ] Add Display Levels beside name in chat and nametag
  
-### Custom Event
+# Custom Event
 The custom event is simple, it disables the title screen to prevent accedendal quit to menu ;)
 ```yml
 # config.yml
@@ -40,7 +40,7 @@ The custom event is simple, it disables the title screen to prevent accedendal q
 death-method: "custom"
 ```
 
-### Commands
+# Commands
 | Command | Usage | Description |
 | ------- | ----- | ----------- |
 | `/stats` | `/stats <player>` | Shows yours or another players stats. |
@@ -53,7 +53,7 @@ death-method: "custom"
 | `streaks` |
 | `xp` *comming soon* | 
 
-### Full Config
+# Full Config
 ```yml
 #Set world to what world you want the texts to spawn in. Currently only supports one world.
 #enable floating texts.
@@ -131,5 +131,5 @@ username: ""
 password: ""
 database: ""
 ```
-## 💰 Credits
+# 💰 Credits
 Icon made by Freepik from www.flaticon.com is licensed by CC 3.0 BY
