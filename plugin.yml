@@ -1,6 +1,6 @@
 name: Afterlife
 main: atom\afterlife\Main
-version: 3.2.8
+version: 3.2.9
 api: 
   - 3.5.5
 
