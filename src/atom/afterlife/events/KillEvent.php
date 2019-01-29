@@ -29,7 +29,7 @@ class KillEvent implements Listener {
                 if ($this->plugin->config->get("use-levels") == true) {
                     $this->plugin->addXp($killer->getName(), $this->plugin->config->get("add-level-xp-amount"));
                     $this->plugin->removeXp($victim->getName(), $this->plugin->config->get("loose-level-xp-amount"));
-                    if ($this->plugin->getXp($killer->getName()) == $this->plugin->config->get("xp-levelup-ammount")) {
+                    if ($this->plugin->getXp($killer->getName()) > $this->plugin->config->get("xp-levelup-ammount")) {
                         $this->plugin->addLevel($killer->getName(), $this->plugin->getLevel() + 1);
                     }
                 }
