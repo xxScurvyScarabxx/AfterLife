@@ -86,10 +86,11 @@ class Main extends PluginBase implements Listener {
 
 		# Creats config files to store plugin settings for easy editing.
         @mkdir($this->getDataFolder());
-		@mkdir($this->getDataFolder() . "players/");
+		@mkdir($this->getDataFolder() . 'players/');
+		@mkdir($this->getDataFolder() . 'leaderboards/');
         $this->config = $this->getConfig();
-		$this->texts = new Config($this->getDataFolder() . "texts.yml", Config::YAML);
-		$this->texts->save();
+		// $this->texts = new Config($this->getDataFolder() . "texts.yml", Config::YAML);
+		// $this->texts->save();
 		
 		# loads mysqli database
 		if ($this->config->get('type') === "online") {
@@ -129,13 +130,13 @@ class Main extends PluginBase implements Listener {
      * @param string $type
      * @param array $player
      */
-	public function addText(Vector3 $location, string $type = "title", $player) {
+	public function addText(Vector3 $location, $level, string $type = "title", $player) {
 		switch ($this->getServer()->getName()) {
 			case 'PocketMine-MP':
 				$title = $this->config->get("texts-title")[$type];
 				$particle = new FloatingTextParticle($location, $this->colorize($title) . "\n" . $this->getData($type));
 				$player->getLevel()->addParticle($particle, [$player]);
-				$this->ftps[$player->getName()][] = $particle;
+				$this->ftps[$type][$level] = $particle;
 				break;
 
 			case 'Altay':
@@ -148,25 +149,27 @@ class Main extends PluginBase implements Listener {
 		}
     }
 
-	public function levelChangeEvent(EntityLevelChangeEvent $action) {
+	public function levelChangeEvent(EntityLevelChangeEvent $action):void {
 		$player = $action->getEntity();
-		$target = $action->getTarget()->getName();
-		$levels = [];
-		$ftps = $this->ftps[$player->getName()];
-		foreach ($this->texts->getAll() as $loc => $array) {
-			foreach ($array as $level => $type) {
-				foreach ($ftps as $particle) {
-					array_push($levels, $level);
-					if (!in_array($target, $levels)) {
-						$particle->setInvisible();
-						$player->getLevel()->addParticle($particle, [$player]);
-					} else {
-						$particle->setInvisible(false);
-						$player->getLevel()->addParticle($particle, [$player]);
-					}
-				}
-			}
-		}
+		$target = $action->getTarget();
+		$files = scandir($this->getDataFolder() . 'leaderboards/');
+        foreach ($files as $file) {
+            $path = $this->getDataFolder(). 'leaderboards/' . $file;
+            if (is_file($path)) {
+                $data = yaml_parse_file($path);
+				$level = $data['level'];
+				$type = $data['type'];
+                if (!isset($this->ftps[$type][$target->getName()])) {
+                    $ftp = $this->ftps[$type][$level];
+                    $ftp->setInvisible();
+                    $player->getLevel()->addParticle($ftp, [$player]);
+                } else {
+                    $ftp = $this->ftps[$type][$level];
+                    $ftp->setInvisible(false);
+                    $player->getLevel()->addParticle($ftp, [$player]);
+                }
+            }
+        }
 	}
 
 	public function onCommand (CommandSender $player, Command $cmd, string $label, array $args):bool {
@@ -189,14 +192,14 @@ class Main extends PluginBase implements Listener {
 					if ($cmd == "setleaderboard") {
 						if (isset($args[0])) {
 							if (in_array($args[0], ["levels", "kills", "kdr", "streaks"])) {
-
-								$possition = implode("_", [round($player->getX(), 2), round($player->getY(), 2) + 1.7, round($player->getZ(), 2)]);
-								$value = [$player->getLevel()->getName()=>$args[0]];
-								$this->texts->set($possition, $value);
-								$this->texts->save();
-								$possition = new Position($player->getX(), $player->getY(), $player->getZ(), $player->getLevel());
+								$level = $player->getLevel()->getName();
+								$x = round($player->getX(), 1);
+								$y = round($player->getY(), 1) + 1.7;
+								$z = round($player->getZ(), 1);
+								yaml_emit_file($this->getDataFolder() . "leaderboards/" . $args[0] . "_" . $level . ".yml", ['level'=>$level, 'type'=>$args[0], 'xx'=>$x, 'yy'=>$y, 'zz'=>$z]);
+								$possition = new Position($player->getX(), $player->getY() + 1.7, $player->getZ(), $player->getLevel());
 								if ($player->getLevel() === $this->getServer()->getLevelByName($this->config->get("texts-world"))) {
-									$this->addText($possition, $args[0], $player);
+									$this->addText($possition, $player->getLevel()->getName(), $args[0], $player);
 									$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
 								} else {
 									$player->sendMessage(color::RED."You are not in the world spesified in the config to spawn floating texts...");
@@ -205,6 +208,7 @@ class Main extends PluginBase implements Listener {
 							} elseif ((in_array($args[0], ["del", "remove", "delete"]))) {
                                 // coming soon
 							} elseif ((in_array($args[0], ["debug"]))) {
+								// var_dump($this->ftps);
 								// $type = "Human";
 								// $name = $player->getDisplayName();
 								// $nbt = $this->makeNBT($type, $player, $name);
