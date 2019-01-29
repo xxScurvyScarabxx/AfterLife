@@ -67,7 +67,11 @@ class KillCounter{
             $this->plugin->addXp($this->player, $this->plugin->config->get("add-level-xp-amount"));
         }
 
-        $this->ratio = round(($this->kills / $this->deaths), 1);
+        if ($this->deaths > 0) {
+            $this->ratio = round(($this->kills / $this->deaths), 1);
+        } else {
+            $this->ratio = 1;
+        }
         $this->save();
     }
 
