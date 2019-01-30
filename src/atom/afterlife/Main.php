@@ -103,8 +103,8 @@ class Main extends PluginBase implements Listener {
 				color::RED."\nDeaths: ".color::GREEN.$this->getDeaths($player->getName()).
 				color::RED."\nK/D Ratio: ".color::GREEN.$this->getKdr($player->getName()).
 				color::RED."\n\n\nLevel: ".color::GREEN.$this->getLevel($player->getName()).
-				color::RED."\nExperience: ".color::GREEN.$this->getXp($player->getName()).
-				color::RED."\nTotal XP".color::GREEN.$this->getTotalXp($player->getName())."\n\n"
+				color::RED."\nTotal XP".color::GREEN.$this->getTotalXp($player->getName()).
+				color::RED."\nXp needed to level up: ".color::GREEN.$this->getXp($player->getName())."\n\n"
 				);
 				$button = new Button(color::RED.'Close'); 
 				$button->addImage(Button::IMAGE_TYPE_PATH, "textures/items/stick");
@@ -208,16 +208,17 @@ class Main extends PluginBase implements Listener {
 
 			case "standard":
 				$player->sendMessage(color::LIGHT_PURPLE."*************");
-				$player->sendMessage(color::RED."Name: ". color::WHITE.$player->getName());
+				$player->sendMessage(color::YELLOW."Current Win Streak ".color::BLUE.$this->getStreak($player->getName())."\n\n");
 				$player->sendMessage(color::RED."Kils: ".color::GREEN.$this->getKills($player->getName()));
 				$player->sendMessage(color::RED."Deaths: ".color::GREEN.$this->getDeaths($player->getName()));
-				$player->sendMessage(color::RED."kdr: ".color::BLUE.$this->getKdr($player->getName()));
-				$player->sendMessage(color::GRAY."Win Streak: ".color::BLUE.$this->getStreak($player->getName()));
+				$player->sendMessage(color::RED."K/D Ratio: ".color::BLUE.$this->getKdr($player->getName()));
+				$player->sendMessage(color::RED."Level: ".color::GREEN.$this->getLevel($player->getName()));
+				$player->sendMessage(color::RED."Total XP".color::GREEN.$this->getTotalXp($player->getName()));
+				$player->sendMessage(color::RED."Xp needed to level up: ".color::GREEN.$this->getXp($player->getName()));
 				$player->sendMessage(color::LIGHT_PURPLE."*************");
 				break;
 		}
 	}
-
 
 	public function mysqlConnect () {
 		$server = $this->config->get('server');
@@ -326,7 +327,7 @@ class Main extends PluginBase implements Listener {
 
 
 	/**
-	 * Returns Player Xp
+	 * Returns Player Xp till level up
 	 * @param type $type
 	 * @return GetXp
 	 */
@@ -335,6 +336,11 @@ class Main extends PluginBase implements Listener {
 		return $data->getXp($name);
 	}
 
+	/**
+	 * Returns Player curent xp
+	 * @param type $type
+	 * @return GetXp
+	 */
 	public function getTotalXp($name) {
 		$data = new GetXp($this, $name);
 		return $data->getTotalXp($name);
