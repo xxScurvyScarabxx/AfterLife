@@ -48,7 +48,8 @@ class GetXp {
     }
 
     public function getXp() {
-        return $this->xp;
+        $diff = abs($this->plugin->config->get('xp-levelup-ammount') - $this->xp);
+        return $diff;
     }
 
     public function getTotalXp() {
