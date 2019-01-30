@@ -10,11 +10,6 @@ use pocketmine\plugin\PluginBase;
 
 # events
 use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerDeathEvent;
-use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\player\PlayerExhaustEvent;
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\event\entity\EntityLevelChangeEvent;
 
 # calculating
 use pocketmine\math\Vector3;
@@ -38,6 +33,7 @@ use xenialdan\customui\windows\SimpleForm;
 
 # plugin files
 use atom\afterlife\events\SetUpEvent;
+use atom\afterlife\events\LevelChangeEvent;
 use atom\afterlife\events\KillEvent;
 use atom\afterlife\events\CustomDeath;
 use atom\afterlife\modules\GetStreak;
@@ -78,6 +74,7 @@ class Main extends PluginBase implements Listener {
 		$this->getServer()->getPluginManager()->registerEvents(new SetUpEvent($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new KillEvent($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new CustomDeath($this), $this);
+		$this->getServer()->getPluginManager()->registerEvents(new LevelChangeEvent($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents(new NoPvP($this), $this);
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 
@@ -106,7 +103,8 @@ class Main extends PluginBase implements Listener {
 				color::RED."\nDeaths: ".color::GREEN.$this->getDeaths($player->getName()).
 				color::RED."\nK/D Ratio: ".color::GREEN.$this->getKdr($player->getName()).
 				color::RED."\n\n\nLevel: ".color::GREEN.$this->getLevel($player->getName()).
-				color::RED."\nExperience: ".color::GREEN.$this->getXp($player->getName())."\n\n\n"
+				color::RED."\nExperience: ".color::GREEN.$this->getXp($player->getName()).
+				color::RED."\nTotal XP".color::GREEN.$this->getTotalXp($player->getName())."\n\n"
 				);
 				$button = new Button(color::RED.'Close'); 
 				$button->addImage(Button::IMAGE_TYPE_PATH, "textures/items/stick");
@@ -147,29 +145,6 @@ class Main extends PluginBase implements Listener {
 		}
     }
 
-	public function levelChangeEvent(EntityLevelChangeEvent $action):void {
-		$player = $action->getEntity();
-		$target = $action->getTarget();
-		$files = scandir($this->getDataFolder() . 'leaderboards/');
-        foreach ($files as $file) {
-            $path = $this->getDataFolder(). 'leaderboards/' . $file;
-            if (is_file($path)) {
-                $data = yaml_parse_file($path);
-				$level = $data['level'];
-				$type = $data['type'];
-                if (!isset($this->ftps[$type][$target->getName()])) {
-                    $ftp = $this->ftps[$type][$level];
-                    $ftp->setInvisible();
-                    $player->getLevel()->addParticle($ftp, [$player]);
-                } else {
-                    $ftp = $this->ftps[$type][$level];
-                    $ftp->setInvisible(false);
-                    $player->getLevel()->addParticle($ftp, [$player]);
-                }
-            }
-        }
-	}
-
 	public function onCommand (CommandSender $player, Command $cmd, string $label, array $args):bool {
 		if ($player instanceof Player) {
 			if ($cmd == "stats") {
@@ -204,6 +179,8 @@ class Main extends PluginBase implements Listener {
 								}
 							} elseif ((in_array($args[0], ["del", "remove", "delete"]))) {
                                 // coming soon
+							} elseif (in_array($args[0], ["debug"])) {
+								//
 							}
 						} else {
 							$player->sendMessage(color::RED . "Please choose \n ---kills, \n ---levels, \n ---kdr, \n ---streaks");
@@ -356,6 +333,11 @@ class Main extends PluginBase implements Listener {
 	public function getXp ($name) {
 		$data = new GetXp($this, $name);
 		return $data->getXp($name);
+	}
+
+	public function getTotalXp($name) {
+		$data = new GetXp($this, $name);
+		return $data->getTotalXp($name);
 	}
 
 
