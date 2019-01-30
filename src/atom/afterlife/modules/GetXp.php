@@ -8,6 +8,7 @@ class GetXp {
 
     private $plugin;
     private $xp;
+    private $totalXP;
     private $data = null;
     private $player = null;
 
@@ -20,6 +21,7 @@ class GetXp {
                 $data = yaml_parse_file($path);
                 $this->data = $data;
                 $this->xp = $data["xp"];
+                $this->totalXP = $data['totalXP'];
             } else {
                 return;
             }
@@ -39,6 +41,7 @@ class GetXp {
                 if (in_array($this->player, $names)) {
                     $x = array_search($this->player, $names);
                     $this->xp = $db[$x]['xp'];
+                    $this->totalXP = $db[$x]['totalXP'];
                 }
             }
         }
@@ -46,6 +49,10 @@ class GetXp {
 
     public function getXp() {
         return $this->xp;
+    }
+
+    public function getTotalXp() {
+        return $this->totalXP;
     }
 
     public function getPath() {
