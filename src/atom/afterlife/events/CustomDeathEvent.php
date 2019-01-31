@@ -10,7 +10,7 @@ use pocketmine\event\Listener;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 
-class CustomDeath implements Listener {
+class CustomDeathEvent implements Listener {
 
     private $plugin;
 
