@@ -49,7 +49,7 @@ use atom\afterlife\modules\xpCalculator;
 use atom\afterlife\modules\GetXp;
 use atom\afterlife\modules\GetLevel;
 use atom\afterlife\modules\GetData;
-use atom\afterlife\modules\NoPvP;
+use atom\afterlife\modules\PvpEvent;
 use atom\afterlife\modules\LevelCounter;
 
 class Main extends PluginBase {
