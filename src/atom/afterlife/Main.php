@@ -38,7 +38,7 @@ use atom\afterlife\handler\FormHandler as Form;
 use atom\afterlife\events\SetUpEvent;
 use atom\afterlife\events\LevelChangeEvent;
 use atom\afterlife\events\KillEvent;
-use atom\afterlife\events\CustomDeath;
+use atom\afterlife\events\CustomDeathEvent;
 use atom\afterlife\modules\GetStreak;
 use atom\afterlife\modules\GetKills;
 use atom\afterlife\modules\GetDeaths;
@@ -72,9 +72,9 @@ class Main extends PluginBase {
 		# Registers the plugin events.
 		Server::getInstance()->getPluginManager()->registerEvents(new SetUpEvent($this), $this);
 		Server::getInstance()->getPluginManager()->registerEvents(new KillEvent($this), $this);
-		Server::getInstance()->getPluginManager()->registerEvents(new CustomDeath($this), $this);
+		Server::getInstance()->getPluginManager()->registerEvents(new CustomDeathEvent($this), $this);
 		Server::getInstance()->getPluginManager()->registerEvents(new LevelChangeEvent($this), $this);
-		Server::getInstance()->getPluginManager()->registerEvents(new NoPvP($this), $this);
+		Server::getInstance()->getPluginManager()->registerEvents(new PvpEvent($this), $this);
 
 		$this->saveDefaultConfig();
 		$this->reloadConfig();
