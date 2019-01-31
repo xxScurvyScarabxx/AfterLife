@@ -18,10 +18,10 @@ namespace atom\afterlife;
 # Main Files
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginBase;
 
 # calculating
-use pocketmine\math\Vector3;
 use pocketmine\level\Position;
 
 #commands
@@ -34,6 +34,7 @@ use pocketmine\level\particle\FloatingTextParticle;
 
 # plugin files
 use atom\afterlife\handler\FormHandler as Form;
+use atom\afterlife\handler\FloatingTextHandler as Leaderboard;
 
 use atom\afterlife\events\SetUpEvent;
 use atom\afterlife\events\LevelChangeEvent;
@@ -54,10 +55,11 @@ use atom\afterlife\modules\LevelCounter;
 
 class Main extends PluginBase {
 
-	public static $instance;
-
 	public $mysqli;
 	public $config;
+
+	/** @var $this */
+	public static $instance;
 
 	/** @var array[FloatingTextParticle] */
 	public $ftps = [];
@@ -65,7 +67,7 @@ class Main extends PluginBase {
 	/** @var int[] **/
 	public static $uis = [];
 	
-	public function onEnable() {
+	public function onEnable():void {
 		# Registers plugin instance
 		self::$instance = $this;
 
@@ -79,7 +81,7 @@ class Main extends PluginBase {
 		$this->saveDefaultConfig();
 		$this->reloadConfig();
 
-		# Creats config files to store plugin settings for easy editing.
+		# Creats config files to store plugin settings.
         @mkdir($this->getDataFolder());
 		@mkdir($this->getDataFolder() . 'players/');
 		@mkdir($this->getDataFolder() . 'leaderboards/');
@@ -92,37 +94,31 @@ class Main extends PluginBase {
 		}
 	}
 
-
-	public static function getInstance() {
-		return self::$instance;
+	public function onDisable():void {
+		# closes mysqli connection if set
+		if (isset($this->mysqli)) {
+			$this->mysqli->close();
+			$this->getLogger()->notice("Connection to database terminated!");
+		}
 	}
 
 	/**
-     * Initializes Floating Texts.
-     * @param Vector3 $location
-     * @param string $type
-     * @param array $player
-	 * 
-	 * @todo add support for forks
-     */
-	public function addText(Vector3 $location, $level, string $type = "title", $player) {
-		switch (Server::getInstance()->getName()) {
-			case 'PocketMine-MP':
-				$title = $this->config->get("texts-title")[$type];
-				$particle = new FloatingTextParticle($location, $this->colorize($title) . "\n" . $this->getData($type));
-				$player->getLevel()->addParticle($particle, [$player]);
-				$this->ftps[$type][$level] = $particle;
-				break;
+	 * Retrieves the this plugins instance
+	 * @return Plugin
+	 */
+	public static function getInstance():Plugin {
+		return self::$instance;
+	}
 
-			// case 'Altay':
-			// 	$typetitle = $this->config->get("texts-title")[$type];
-			// 	$id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
-			// 	$particle = new FloatingTextParticle(color::GOLD . "<<<<<>>>>>", $this->colorize($typetitle) . "\n" . $this->getData($type), $location);
-			// 	Server::getInstance()->getLevelByName($this->config->get("texts-world"))->addParticle($location, $particle);
-			// 	$this->particles[$id] = $particle;
-			// 	break;
-		}
-    }
+
+
+
+
+
+
+
+
+
 
 	public function onCommand (CommandSender $player, Command $cmd, string $label, array $args):bool {
 		if ($player instanceof Player) {
@@ -151,7 +147,7 @@ class Main extends PluginBase {
 									$z = round($player->getZ(), 1);
 									yaml_emit_file($this->getDataFolder() . "leaderboards/" . $args[0] . "_" . $level . ".yml", ['level'=>$level, 'type'=>$args[0], 'xx'=>$x, 'yy'=>$y, 'zz'=>$z]);
 									$possition = new Position($player->getX(), $player->getY() + 1.7, $player->getZ(), $player->getLevel());
-									$this->addText($possition, $player->getLevel()->getName(), $args[0], $player);
+									Leaderboard::addText($possition, $player->getLevel()->getName(), $args[0], $player);
 									$player->sendMessage(color::RED.$args[0].color::YELLOW." leaderboard created!");
 								} else {
 									$player->sendMessage('Error:'.' '.$args[0].' '.'Floating text already exists in'.' '.$player->getLevel()->getName());
@@ -198,14 +194,6 @@ class Main extends PluginBase {
 				$this->getLogger()->notice("connected to MySQL");
 				$this->getLogger()->notice("Loaded Database");
 			}
-		}
-	}
-
-
-	public function onDisable(): void {
-		if (isset($this->mysqli)) {
-			$this->mysqli->close();
-			$this->getLogger()->notice("Connection to database terminated!");
 		}
 	}
 
