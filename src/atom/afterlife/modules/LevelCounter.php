@@ -3,12 +3,14 @@
 namespace atom\afterlife\modules;
 
 use pocketmine\Player;
+use atom\afterlife\handler\DataHandler as mySQL;
 
 class LevelCounter {
 
     private $plugin;
     private $level;
     private $xp;
+    private $totalXp;
     private $kills;
     private $deaths;
     private $killStreak;
@@ -26,6 +28,7 @@ class LevelCounter {
                 $this->data = $data;
                 $this->level = $data["level"];
                 $this->xp = $data["xp"];
+                $this->totalXp = $data["totalXP"];
                 $this->kills = $data["kills"];
                 $this->deaths = $data["deaths"];
                 $this->killStreak = $data["streak"];
@@ -35,7 +38,7 @@ class LevelCounter {
             }
         } else {
             $sql = "SELECT * FROM afterlife;";
-            $result = mysqli_query($this->plugin->mysqli, $sql);
+            $result = mysqli_query(mySQL::$database, $sql);
             $check = mysqli_num_rows($result);
             $db = array();
             $names = array();
@@ -76,10 +79,10 @@ class LevelCounter {
 
     public function save() {
         if ($this->plugin->config->get('type') !== "online") {
-            yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
+            yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "totalXP"=>$this->totalXp, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
         } else {
             $sql = "UPDATE afterlife SET level='$this->level', xp='$this->xp' WHERE name='$this->player'";
-            mysqli_query($this->plugin->mysqli, $sql);
+            mysqli_query(mySQL::$database, $sql);
         }
     }
 }
