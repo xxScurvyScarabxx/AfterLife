@@ -7,7 +7,7 @@ use pocketmine\utils\Config;
 use pocketmine\event\Listener;
 use pocketmine\event\entity\EntityDamageEvent;
 
-class NoPvP implements Listener {
+class PvpEvent implements Listener {
 
     private $plugin;
 
