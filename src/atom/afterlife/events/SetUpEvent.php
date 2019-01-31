@@ -7,7 +7,10 @@ use pocketmine\math\Vector3;
 use pocketmine\level\Position;
 use pocketmine\utils\Config;
 use pocketmine\event\Listener;
+use atom\afterlife\handler\DataHandler as mySQL;
 use pocketmine\event\player\PlayerJoinEvent;
+
+use atom\afterlife\handler\FloatingTextHandler as Leaderboard;
 
 class SetUpEvent implements Listener {
 
@@ -29,7 +32,7 @@ class SetUpEvent implements Listener {
 
         $files = scandir($this->plugin->getDataFolder() . "players/");
         if ($this->plugin->config->get('type') === "online") {
-            $this->database = $this->plugin->mysqli;
+            $this->database = mySQL::$database;
             $sql = "SELECT * FROM afterlife";
             $stmt = mysqli_stmt_init($this->database);
             $result = mysqli_query($this->database, $sql);
@@ -70,7 +73,7 @@ class SetUpEvent implements Listener {
                 $yy = $data['yy'];
                 $zz = $data['zz'];
                 $possition = new Position($xx, $yy, $zz, $this->plugin->getServer()->getLevelByName($level));
-                $this->plugin->addText($possition, $level, $type, $this->plugin->getServer()->getPlayerExact($name));
+                Leaderboard::addText($possition, $level, $type, $this->plugin->getServer()->getPlayerExact($name));
                 if (!isset($this->plugin->ftps[$type][$player->getLevel()->getName()])) {
                     $ftp = $this->plugin->ftps[$type][$level];
                     $ftp->setInvisible();
