@@ -1,15 +1,24 @@
 <?php
 
-namespace atom\afterlife;
+/**
+ *     _       __   _                   _   _    __        
+ *    / \     / _| | |_    ___   _ __  | | (_)  / _|   ___ 
+ *   / _ \   | |_  | __|  / _ \ | '__| | | | | | |_   / _ \
+ *  / ___ \  |  _| | |_  |  __/ | |    | | | | |  _| |  __/
+ * /_/   \_\ |_|    \__|  \___| |_|    |_| |_| |_|    \___|
+ * 
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza
+ * @version 3.2.10
+ * @copyright GNU (general public license)
+ */
 
+namespace atom\afterlife;
 
 # Main Files
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\plugin\PluginBase;
-
-# events
-use pocketmine\event\Listener;
 
 # calculating
 use pocketmine\math\Vector3;
@@ -20,18 +29,12 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
 # utils
-use pocketmine\item\Item;
-use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat as color;
-use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\level\particle\FloatingTextParticle;
 
-# customui
-use xenialdan\customui\API as Form;
-use xenialdan\customui\elements\Button;
-use xenialdan\customui\windows\SimpleForm;
-
 # plugin files
+use atom\afterlife\handler\FormHandler as Form;
+
 use atom\afterlife\events\SetUpEvent;
 use atom\afterlife\events\LevelChangeEvent;
 use atom\afterlife\events\KillEvent;
@@ -49,34 +52,29 @@ use atom\afterlife\modules\GetData;
 use atom\afterlife\modules\NoPvP;
 use atom\afterlife\modules\LevelCounter;
 
+class Main extends PluginBase {
 
-
-use pocketmine\entity\Entity;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\block\BlockFactory;
-
-class Main extends PluginBase implements Listener {
+	public static $instance;
 
 	public $mysqli;
-
 	public $config;
-	public $texts;
-	public $playerData = [];
-	public $particles = [];
+
+	/** @var array[FloatingTextParticle] */
 	public $ftps = [];
 	
 	/** @var int[] **/
 	public static $uis = [];
 	
 	public function onEnable() {
+		# Registers plugin instance
+		self::$instance = $this;
 
 		# Registers the plugin events.
-		$this->getServer()->getPluginManager()->registerEvents(new SetUpEvent($this), $this);
-		$this->getServer()->getPluginManager()->registerEvents(new KillEvent($this), $this);
-		$this->getServer()->getPluginManager()->registerEvents(new CustomDeath($this), $this);
-		$this->getServer()->getPluginManager()->registerEvents(new LevelChangeEvent($this), $this);
-		$this->getServer()->getPluginManager()->registerEvents(new NoPvP($this), $this);
-		$this->getServer()->getPluginManager()->registerEvents($this, $this);
+		Server::getInstance()->getPluginManager()->registerEvents(new SetUpEvent($this), $this);
+		Server::getInstance()->getPluginManager()->registerEvents(new KillEvent($this), $this);
+		Server::getInstance()->getPluginManager()->registerEvents(new CustomDeath($this), $this);
+		Server::getInstance()->getPluginManager()->registerEvents(new LevelChangeEvent($this), $this);
+		Server::getInstance()->getPluginManager()->registerEvents(new NoPvP($this), $this);
 
 		$this->saveDefaultConfig();
 		$this->reloadConfig();
@@ -94,40 +92,21 @@ class Main extends PluginBase implements Listener {
 		}
 	}
 
-	private function statsUI(Player $player){
-		switch ($this->getServer()->getName()) {
-			case 'PocketMine-MP':
-				$ui = new SimpleForm('Player Stats',
-				color::YELLOW."\nCurrent Win Streak ".color::BLUE.$this->getStreak($player->getName())."\n\n".
-				color::RED."\nKills: ".color::GREEN.$this->getKills($player->getName()).
-				color::RED."\nDeaths: ".color::GREEN.$this->getDeaths($player->getName()).
-				color::RED."\nK/D Ratio: ".color::GREEN.$this->getKdr($player->getName()).
-				color::RED."\n\n\nLevel: ".color::GREEN.$this->getLevel($player->getName()).
-				color::RED."\nTotal XP".color::GREEN.$this->getTotalXp($player->getName()).
-				color::RED."\nXp needed to level up: ".color::GREEN.$this->getXp($player->getName())."\n\n"
-				);
-				$button = new Button(color::RED.'Close'); 
-				$button->addImage(Button::IMAGE_TYPE_PATH, "textures/items/stick");
-				$ui->addButton($button);
-				self::$uis['statsui'] = Form::addUI($this, $ui);
-				// var_dump($button);
-				break;
-				
-			default;
-				$player->sendMessage("Forms are not *YET* supported on this fork... please choose 'standard in config'");
-				break;
-		}
-	}
 
+	public static function getInstance() {
+		return self::$instance;
+	}
 
 	/**
      * Initializes Floating Texts.
      * @param Vector3 $location
      * @param string $type
      * @param array $player
+	 * 
+	 * @todo add support for forks
      */
 	public function addText(Vector3 $location, $level, string $type = "title", $player) {
-		switch ($this->getServer()->getName()) {
+		switch (Server::getInstance()->getName()) {
 			case 'PocketMine-MP':
 				$title = $this->config->get("texts-title")[$type];
 				$particle = new FloatingTextParticle($location, $this->colorize($title) . "\n" . $this->getData($type));
@@ -135,13 +114,13 @@ class Main extends PluginBase implements Listener {
 				$this->ftps[$type][$level] = $particle;
 				break;
 
-			case 'Altay':
-				$typetitle = $this->config->get("texts-title")[$type];
-				$id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
-				$particle = new FloatingTextParticle(color::GOLD . "<<<<<>>>>>", $this->colorize($typetitle) . "\n" . $this->getData($type), $location);
-				$this->getServer()->getLevelByName($this->config->get("texts-world"))->addParticle($location, $particle);
-				$this->particles[$id] = $particle;
-				break;
+			// case 'Altay':
+			// 	$typetitle = $this->config->get("texts-title")[$type];
+			// 	$id = implode("_", [$location->getX(), $location->getY(), $location->getZ()]);
+			// 	$particle = new FloatingTextParticle(color::GOLD . "<<<<<>>>>>", $this->colorize($typetitle) . "\n" . $this->getData($type), $location);
+			// 	Server::getInstance()->getLevelByName($this->config->get("texts-world"))->addParticle($location, $particle);
+			// 	$this->particles[$id] = $particle;
+			// 	break;
 		}
     }
 
@@ -151,7 +130,7 @@ class Main extends PluginBase implements Listener {
 				if (!isset($args[0])) {
 					$this->getStats($player);
 				} else {
-					$target = $this->getServer()->getPlayerExact($args[0]);
+					$target = Server::getInstance()->getPlayerExact($args[0]);
                    if($target !== null) {
                        $this->getStats($target);
                    } else {
@@ -199,27 +178,6 @@ class Main extends PluginBase implements Listener {
 		return true;
 	}
 
-	public function getStats (Player $player) {
-		switch ($this->config->get("profile-method")) {
-			case "form":
-				$this->statsUI($player);
-				Form::showUIbyID($this, self::$uis['statsui'], $player);
-				break;
-
-			case "standard":
-				$player->sendMessage(color::LIGHT_PURPLE."*************");
-				$player->sendMessage(color::YELLOW."Current Win Streak ".color::BLUE.$this->getStreak($player->getName())."\n\n");
-				$player->sendMessage(color::RED."Kils: ".color::GREEN.$this->getKills($player->getName()));
-				$player->sendMessage(color::RED."Deaths: ".color::GREEN.$this->getDeaths($player->getName()));
-				$player->sendMessage(color::RED."K/D Ratio: ".color::BLUE.$this->getKdr($player->getName()));
-				$player->sendMessage(color::RED."Level: ".color::GREEN.$this->getLevel($player->getName()));
-				$player->sendMessage(color::RED."Total XP".color::GREEN.$this->getTotalXp($player->getName()));
-				$player->sendMessage(color::RED."Xp needed to level up: ".color::GREEN.$this->getXp($player->getName()));
-				$player->sendMessage(color::LIGHT_PURPLE."*************");
-				break;
-		}
-	}
-
 	public function mysqlConnect () {
 		$server = $this->config->get('server');
 		$username = $this->config->get('username');
@@ -233,7 +191,7 @@ class Main extends PluginBase implements Listener {
 		
 			if (!$connection) {
 				$this->getLogger()->warning("Unable to connect to MySQL");
-				$this->getServer()->getPluginManager()->disablePlugin($this);
+				Server::getInstance()->getPluginManager()->disablePlugin($this);
 				exit();
 			} else {
 				$this->mysqli = $connection;
@@ -258,6 +216,28 @@ class Main extends PluginBase implements Listener {
  * =========
  * =========
  */
+
+
+	public function getStats (Player $player) {
+		switch ($this->config->get("profile-method")) {
+			case "form":
+				Form::statsUi($player);
+				break;
+
+			case "standard":
+				$player->sendMessage(color::LIGHT_PURPLE."--------------------");
+				$player->sendMessage($player->getName()." stats\n\n");
+				$player->sendMessage(color::YELLOW."Current Win Streak ".color::BLUE.$this->getStreak($player->getName())."\n\n");
+				$player->sendMessage(color::RED."Kils: ".color::GREEN.$this->getKills($player->getName()));
+				$player->sendMessage(color::RED."Deaths: ".color::GREEN.$this->getDeaths($player->getName()));
+				$player->sendMessage(color::RED."K/D Ratio: ".color::GREEN.$this->getKdr($player->getName()));
+				$player->sendMessage(color::RED."Level: ".color::GREEN.$this->getLevel($player->getName()));
+				$player->sendMessage(color::RED."Total XP: ".color::GREEN.$this->getTotalXp($player->getName()));
+				$player->sendMessage(color::RED."Xp needed to level up: ".color::GREEN.$this->getXp($player->getName()));
+				$player->sendMessage(color::LIGHT_PURPLE."--------------------");
+				break;
+		}
+	}
 
 	/**
 	 * Returns Players Win Streek
