@@ -33,6 +33,7 @@ use pocketmine\utils\TextFormat as color;
 use pocketmine\level\particle\FloatingTextParticle;
 
 # plugin files
+use atom\afterlife\handler\DataHandler as mySQLi;
 use atom\afterlife\handler\FormHandler as Form;
 use atom\afterlife\handler\FloatingTextHandler as Leaderboard;
 
@@ -55,7 +56,7 @@ use atom\afterlife\modules\LevelCounter;
 
 class Main extends PluginBase {
 
-	public $mysqli;
+	/** config data */
 	public $config;
 
 	/** @var $this */
@@ -63,9 +64,6 @@ class Main extends PluginBase {
 
 	/** @var array[FloatingTextParticle] */
 	public $ftps = [];
-	
-	/** @var int[] **/
-	public static $uis = [];
 	
 	public function onEnable():void {
 		# Registers plugin instance
@@ -89,8 +87,10 @@ class Main extends PluginBase {
 		
 		# loads mysqli database
 		if ($this->config->get('type') === "online") {
-			$this->mysqlConnect();
-			$this->mysqli->query("CREATE TABLE IF NOT EXISTS `afterlife`(`id` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `name` TINYTEXT NOT NULL, `kills` int(5) NOT NULL, `deaths` int(5) NOT NULL, `ratio` FLOAT NOT NULL, `totalXP` int(5) NOT NULL, `xp` int(5) NOT NULL, `level` int(5) NOT NULL, `streak` int(5) NOT NULL)");
+			mySQLi::connect();
+			mySQLi::$database->query("CREATE TABLE IF NOT EXISTS `afterlife`(`id` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `name` TINYTEXT NOT NULL, `kills` int(5) NOT NULL, `deaths` int(5) NOT NULL, `ratio` FLOAT NOT NULL, `totalXP` int(5) NOT NULL, `xp` int(5) NOT NULL, `level` int(5) NOT NULL, `streak` int(5) NOT NULL)");			
+			// $this->mysqlConnect();
+			// $this->mysqli->query("CREATE TABLE IF NOT EXISTS `afterlife`(`id` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `name` TINYTEXT NOT NULL, `kills` int(5) NOT NULL, `deaths` int(5) NOT NULL, `ratio` FLOAT NOT NULL, `totalXP` int(5) NOT NULL, `xp` int(5) NOT NULL, `level` int(5) NOT NULL, `streak` int(5) NOT NULL)");
 		}
 	}
 
@@ -172,29 +172,6 @@ class Main extends PluginBase {
 		}
 
 		return true;
-	}
-
-	public function mysqlConnect () {
-		$server = $this->config->get('server');
-		$username = $this->config->get('username');
-		$password = $this->config->get('password');
-		$database = $this->config->get('database');
-
-		if (empty($server) || empty($username) || empty($database)) {
-			$this->getLogger()->warning("Please verify your SQL Credentials!");
-		} else {
-			$connection = mysqli_connect($server, $username, $password, $database);
-		
-			if (!$connection) {
-				$this->getLogger()->warning("Unable to connect to MySQL");
-				Server::getInstance()->getPluginManager()->disablePlugin($this);
-				exit();
-			} else {
-				$this->mysqli = $connection;
-				$this->getLogger()->notice("connected to MySQL");
-				$this->getLogger()->notice("Loaded Database");
-			}
-		}
 	}
 
 /**
