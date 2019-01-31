@@ -4,6 +4,8 @@ namespace atom\afterlife\modules;
 
 use pocketmine\Player;
 use pocketmine\utils\TextFormat as color;
+use atom\afterlife\handler\DataHandler as mySQL;
+
 
 class GetData {
 
@@ -41,7 +43,7 @@ class GetData {
             }
         } else {
             $sql = "SELECT * FROM afterlife;";
-            $result = mysqli_query($this->plugin->mysqli, $sql);
+            $result = mysqli_query(mySQL::$database, $sql);
             $check = mysqli_num_rows($result);
             $db = array();
             $names = array();
