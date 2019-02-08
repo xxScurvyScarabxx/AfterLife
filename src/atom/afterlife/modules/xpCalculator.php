@@ -1,8 +1,20 @@
 <?php
 
+/**
+ *                  ____           _                  _           _                  
+ * __  __  _ __    / ___|   __ _  | |   ___   _   _  | |   __ _  | |_    ___    _ __ 
+ * \ \/ / | '_ \  | |      / _` | | |  / __| | | | | | |  / _` | | __|  / _ \  | '__|
+ *  >  <  | |_) | | |___  | (_| | | | | (__  | |_| | | | | (_| | | |_  | (_) | | |   
+ * /_/\_\ | .__/   \____|  \__,_| |_|  \___|  \__,_| |_|  \__,_|  \__|  \___/  |_|   
+ *        |_| 
+ * 
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                                                                       
+ */
+
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
+use atom\afterlife\handler\DataHandler as mySQL;
 
 class xpCalculator {
 
@@ -37,7 +49,7 @@ class xpCalculator {
             }
         } else {
             $sql = "SELECT * FROM afterlife;";
-            $result = mysqli_query($this->plugin->mysqli, $sql);
+            $result = mysqli_query(mySQL::$database, $sql);
             $check = mysqli_num_rows($result);
             $db = array();
             $names = array();
@@ -66,6 +78,9 @@ class xpCalculator {
         $this->xp += $amount;
         $this->totalXp += $amount;
         $this->save();
+        if ($this->xp >= $this->plugin->config->get("xp-levelup-ammount")) {
+            $this->plugin->getAPI()->addLevel($this->player, 1);
+        }
     }
 
     public function removeXp ($amount) {
@@ -91,7 +106,7 @@ class xpCalculator {
             yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "totalXP" => $this->totalXp, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
         } else {
             $sql = "UPDATE afterlife SET totalXP='$this->totalXp', xp='$this->xp' WHERE name='$this->player'";
-            mysqli_query($this->plugin->mysqli, $sql);
+            mysqli_query(mySQL::$database, $sql);
         }
     }
 }
