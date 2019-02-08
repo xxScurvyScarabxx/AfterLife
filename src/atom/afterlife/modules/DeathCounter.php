@@ -1,8 +1,18 @@
 <?php
 
+/**
+ *  ____                   _     _        ____                           _                 
+ * |  _ \    ___    __ _  | |_  | |__    / ___|   ___    _   _   _ __   | |_    ___   _ __ 
+ * | | | |  / _ \  / _` | | __| | '_ \  | |      / _ \  | | | | | '_ \  | __|  / _ \ | '__|
+ * | |_| | |  __/ | (_| | | |_  | | | | | |___  | (_) | | |_| | | | | | | |_  |  __/ | |   
+ * |____/   \___|  \__,_|  \__| |_| |_|  \____|  \___/   \__,_| |_| |_|  \__|  \___| |_|   
+ *   
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                                                           
+ */
+
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
 use atom\afterlife\handler\DataHandler as mySQL;
 
 class DeathCounter{
@@ -66,6 +76,13 @@ class DeathCounter{
     public function addDeath() {
         $this->deaths += 1;
         $this->killStreak = 0;
+
+        if ($this->plugin->config->get("use-levels") == true) {
+            $this->plugin->getAPI()->removeXp($this->player, $this->plugin->config->get("loose-level-xp-amount"));
+            $player = $this->plugin->getServer()->getPlayerExact($this->player);
+            $player->sendPopup("§l§4-".$this->plugin->config->get("loose-level-xp-amount")." xp");
+        }
+
         if ($this->deaths > 0) {
             $this->ratio = round(($this->kills / $this->deaths), 1);
         } else {
