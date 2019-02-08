@@ -1,18 +1,33 @@
 <?php
 
+/**
+ * ___           _   _     _           _   _                  _____                 _         
+ *|_ _|  _ __   (_) | |_  (_)   __ _  | | (_)  ____   ___    |_   _|   ___  __  __ | |_   ___ 
+ * | |  | '_ \  | | | __| | |  / _` | | | | | |_  /  / _ \     | |    / _ \ \ \/ / | __| / __|
+ * | |  | | | | | | | |_  | | | (_| | | | | |  / /  |  __/     | |   |  __/  >  <  | |_  \__ \
+ *|___| |_| |_| |_|  \__| |_|  \__,_| |_| |_| /___|  \___|     |_|    \___| /_/\_\  \__| |___/
+ *
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                                                                                            
+ */
+
 namespace atom\afterlife\events;
 
+# player instance
 use pocketmine\Player;
-use pocketmine\math\Vector3;
+
+# position
 use pocketmine\level\Position;
-use pocketmine\utils\Config;
+
+#events
 use pocketmine\event\Listener;
-use atom\afterlife\handler\DataHandler as mySQL;
 use pocketmine\event\player\PlayerJoinEvent;
 
+# data handler
+use atom\afterlife\handler\DataHandler as mySQL;
 use atom\afterlife\handler\FloatingTextHandler as Leaderboard;
 
-class SetUpEvent implements Listener {
+class InitEvent implements Listener {
 
     private $plugin;
     private $player = null;
@@ -74,14 +89,22 @@ class SetUpEvent implements Listener {
                 $zz = $data['zz'];
                 $possition = new Position($xx, $yy, $zz, $this->plugin->getServer()->getLevelByName($level));
                 Leaderboard::addText($possition, $level, $type, $this->plugin->getServer()->getPlayerExact($name));
-                if (!isset($this->plugin->ftps[$type][$player->getLevel()->getName()])) {
-                    $ftp = $this->plugin->ftps[$type][$level];
-                    $ftp->setInvisible();
-                    $player->getLevel()->addParticle($ftp, [$player]);
-                } else {
-                    $ftp = $this->plugin->ftps[$type][$level];
-                    $ftp->setInvisible(false);
-                    $player->getLevel()->addParticle($ftp, [$player]);
+                switch ($this->plugin->getServer()->getName()) {
+                    case 'PocketMine-MP':
+                        if (!isset($this->plugin->ftps[$type][$player->getLevel()->getName()])) {
+                            $ftp = $this->plugin->ftps[$type][$level];
+                            $ftp->setInvisible();
+                            $player->getLevel()->addParticle($ftp, [$player]);
+                        } else {
+                            $ftp = $this->plugin->ftps[$type][$level];
+                            $ftp->setInvisible(false);
+                            $player->getLevel()->addParticle($ftp, [$player]);
+                        }
+                        break;
+
+                    default:
+				        $player->sendMessage("FloatingTextParticle not supported on this server!");
+				        break;
                 }
             }
         }
