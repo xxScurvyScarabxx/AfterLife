@@ -1,8 +1,18 @@
 <?php
 
+/**
+ *   ____          _     ____            _           
+ *  / ___|   ___  | |_  |  _ \    __ _  | |_    __ _ 
+ * | |  _   / _ \ | __| | | | |  / _` | | __|  / _` |
+ * | |_| | |  __/ | |_  | |_| | | (_| | | |_  | (_| |
+ *  \____|  \___|  \__| |____/   \__,_|  \__|  \__,_|
+ *              
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                                      
+ */
+
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
 use pocketmine\utils\TextFormat as color;
 use atom\afterlife\handler\DataHandler as mySQL;
 
@@ -11,7 +21,7 @@ class GetData {
 
     private $plugin;
 
-    public function __construct($plugin, $player) {
+    public function __construct($plugin) {
         $this->plugin = $plugin;
     }
 
