@@ -1,8 +1,18 @@
 <?php
 
+/**
+ *  _  __  _   _   _    ____                           _                 
+ * | |/ / (_) | | | |  / ___|   ___    _   _   _ __   | |_    ___   _ __ 
+ * | ' /  | | | | | | | |      / _ \  | | | | | '_ \  | __|  / _ \ | '__|
+ * | . \  | | | | | | | |___  | (_) | | |_| | | | | | | |_  |  __/ | |   
+ * |_|\_\ |_| |_| |_|  \____|  \___/   \__,_| |_| |_|  \__|  \___| |_|   
+ *   
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                                                                   
+ */
+
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
 use atom\afterlife\handler\DataHandler as mySQL;
 
 class KillCounter{
@@ -68,7 +78,7 @@ class KillCounter{
         $this->killStreak += 1;
         
         if ($this->plugin->config->get("use-levels") == true) {
-            $this->plugin->addXp($this->player, $this->plugin->config->get("add-level-xp-amount"));
+            $this->plugin->getAPI()->addXp($this->player, $this->plugin->config->get("add-level-xp-amount"));
         }
 
         if ($this->deaths > 0) {
