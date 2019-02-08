@@ -1,8 +1,18 @@
 <?php
 
+/**
+ *  _                             _    ____                           _                 
+ * | |       ___  __   __   ___  | |  / ___|   ___    _   _   _ __   | |_    ___   _ __ 
+ * | |      / _ \ \ \ / /  / _ \ | | | |      / _ \  | | | | | '_ \  | __|  / _ \ | '__|
+ * | |___  |  __/  \ V /  |  __/ | | | |___  | (_) | | |_| | | | | | | |_  |  __/ | |   
+ * |_____|  \___|   \_/    \___| |_|  \____|  \___/   \__,_| |_| |_|  \__|  \___| |_|   
+ *           
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                                                                           
+ */
+
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
 use atom\afterlife\handler\DataHandler as mySQL;
 
 class LevelCounter {
@@ -66,6 +76,8 @@ class LevelCounter {
         $this->level += $amount;
         $this->xp = 0;
         $this->save();
+        $player = $this->plugin->getServer()->getPlayerExact($this->player);
+        $player->addTitle("§k§eiii§r §bLevelup §k§eiii§r", "you are now level§4 ".$this->level);
     }
 
     public function removelevel($amount) {
@@ -79,9 +91,9 @@ class LevelCounter {
 
     public function save() {
         if ($this->plugin->config->get('type') !== "online") {
-            yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "totalXP"=>$this->totalXp, "xp" => $this->xp, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
+            yaml_emit_file($this->getPath(), ["name" => $this->player, "level" => $this->level, "totalXP"=>$this->totalXp, "xp" => 0, "kills" => $this->kills, "deaths" => $this->deaths, "streak" => $this->killStreak, "ratio" => $this->ratio]);
         } else {
-            $sql = "UPDATE afterlife SET level='$this->level', xp='$this->xp' WHERE name='$this->player'";
+            $sql = "UPDATE afterlife SET level='$this->level', xp='0' WHERE name='$this->player'";
             mysqli_query(mySQL::$database, $sql);
         }
     }
