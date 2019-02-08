@@ -1,8 +1,19 @@
 <?php
 
+/**
+ *   ____          _     _  __  _   _   _       
+ *  / ___|   ___  | |_  | |/ / (_) | | | |  ___ 
+ * | |  _   / _ \ | __| | ' /  | | | | | | / __|
+ * | |_| | |  __/ | |_  | . \  | | | | | | \__ \
+ *  \____|  \___|  \__| |_|\_\ |_| |_| |_| |___/
+ *                
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                              
+ */
+
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
+use atom\afterlife\handler\DataHandler as mySQL;
 
 class GetKills{
 
@@ -25,7 +36,7 @@ class GetKills{
             }
         } else {
             $sql = "SELECT * FROM afterlife;";
-            $result = mysqli_query($this->plugin->mysqli, $sql);
+            $result = mysqli_query(mySQL::$database, $sql);
             $check = mysqli_num_rows($result);
             $db = array();
             $names = array();
