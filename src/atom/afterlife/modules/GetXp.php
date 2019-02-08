@@ -1,8 +1,18 @@
 <?php
 
+/**
+ *   ____          _    __  __  ____  
+ *  / ___|   ___  | |_  \ \/ / |  _ \ 
+ * | |  _   / _ \ | __|  \  /  | |_) |
+ * | |_| | |  __/ | |_   /  \  |  __/ 
+ *  \____|  \___|  \__| /_/\_\ |_|    
+ *                                   
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza
+ */
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
+use atom\afterlife\handler\DataHandler as mySQL;
 
 class GetXp {
 
@@ -27,7 +37,7 @@ class GetXp {
             }
         } else {
             $sql = "SELECT * FROM afterlife;";
-            $result = mysqli_query($this->plugin->mysqli, $sql);
+            $result = mysqli_query(mySQL::$database, $sql);
             $check = mysqli_num_rows($result);
             $db = array();
             $names = array();
