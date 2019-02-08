@@ -1,8 +1,19 @@
 <?php
 
+/**
+ *   ____          _     _                             _ 
+ *  / ___|   ___  | |_  | |       ___  __   __   ___  | |
+ * | |  _   / _ \ | __| | |      / _ \ \ \ / /  / _ \ | |
+ * | |_| | |  __/ | |_  | |___  |  __/  \ V /  |  __/ | |
+ *  \____|  \___|  \__| |_____|  \___|   \_/    \___| |_|
+ *                          
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                             
+ */
+
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
+use atom\afterlife\handler\DataHandler as mySQL;
 
 class GetLevel {
 
@@ -25,7 +36,7 @@ class GetLevel {
             }
         } else {
             $sql = "SELECT * FROM afterlife;";
-            $result = mysqli_query($this->plugin->mysqli, $sql);
+            $result = mysqli_query(mySQL::$database, $sql);
             $check = mysqli_num_rows($result);
             $db = array();
             $names = array();
