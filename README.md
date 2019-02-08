@@ -1,6 +1,3 @@
-# WARNING!
-this plugin is curently in a re-write state and should not be used untill you see this message disappear....
-
 # Important!
 Floating text leaderboards have been rewriten in verson `3.2.8`, if updating... delete `texts.yml` in your config as there is now no use for it, it will be regenerated automaticly inside of `leaderboards/` folder in your config...
 
@@ -58,11 +55,9 @@ death-method: "custom"
 
 # Full Config
 ```yml
-#Set world to what world you want the texts to spawn in. Currently only supports one world.
 #enable floating texts.
 #true: false:
 texts-enabled: true
-texts-world: "lobby"
 
 #how many players to display
 texts-top: 5
