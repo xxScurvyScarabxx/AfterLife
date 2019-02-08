@@ -1,8 +1,19 @@
 <?php
 
+/**
+ *   ____          _       _  __     __  ___       ____            _     _         
+ *  / ___|   ___  | |_    | |/ /    / / |  _ \    |  _ \    __ _  | |_  (_)   ___  
+ * | |  _   / _ \ | __|   | ' /    / /  | | | |   | |_) |  / _` | | __| | |  / _ \ 
+ * | |_| | |  __/ | |_    | . \   / /   | |_| |   |  _ <  | (_| | | |_  | | | (_) |
+ *  \____|  \___|  \__|   |_|\_\ /_/    |____     |_| \_\  \__,_|  \__| |_|  \___/ 
+ *                        
+ * @author iAtomPlaza
+ * @link https://twitter.com/iAtomPlaza                                                              
+ */
+
 namespace atom\afterlife\modules;
 
-use pocketmine\Player;
+use atom\afterlife\handler\DataHandler as mySQL;
 
 class GetRatio {
 
@@ -29,7 +40,7 @@ class GetRatio {
             }
         } else {
             $sql = "SELECT * FROM afterlife;";
-            $result = mysqli_query($this->plugin->mysqli, $sql);
+            $result = mysqli_query(mySQL::$database, $sql);
             $check = mysqli_num_rows($result);
             $db = array();
             $names = array();
@@ -52,8 +63,10 @@ class GetRatio {
 
     public function getRatio() {
         if ($this->deaths > 0){
-            return round(($this->kills / $this->deaths), 1);
+            $this->ratio = round(($this->kills / $this->deaths), 1);
+            return $this->ratio;
         } else {
+            $this->ratio = 1;
             return 1;
         }
     }
