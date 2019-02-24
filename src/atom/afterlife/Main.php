@@ -94,7 +94,7 @@ class Main extends PluginBase {
 		# closes mysqli connection if set
 		if (isset($this->mysqli)) {
 			$this->mysqli->close();
-			$this->getLogger()->notice("Connection to database terminated!");
+			// $this->getLogger()->notice("Connection to database terminated!");
 		}
 	}
 
