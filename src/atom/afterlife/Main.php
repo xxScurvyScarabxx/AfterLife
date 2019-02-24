@@ -93,7 +93,7 @@ class Main extends PluginBase {
 	public function onDisable():void {
 		# closes mysqli connection if set
 		if (isset($this->mysqli)) {
-			$this->mysqli->close();
+			mySQL::$database->close();
 			// $this->getLogger()->notice("Connection to database terminated!");
 		}
 	}
