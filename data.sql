@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS afterlife (
     totalXP int(5) NOT NULL,
     xp int(5) NOT NULL,
     level int(5) NOT NULL,
-    streak int(5) NOT NULL
+    streak int(5) NOT NULL,
 );
